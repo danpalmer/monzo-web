@@ -1,0 +1,31 @@
+{
+  "name": "mondo-web",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": "Dan Palmer",
+  "description": "A web interface for Mondo banking.",
+  "repository": "https://github.com/danpalmer/mondo-web",
+  "scripts": {
+    "start": "webpack-dev-server --port 8080",
+    "build": "webpack",
+    "watch": "webpack --watch"
+  },
+  "devDependencies": {
+    "autoprefixer": "6.2.3",
+    "css-loader": "0.23.1",
+    "elm": "0.16.0",
+    "elm-webpack-loader": "1.1.1",
+    "extract-text-webpack-plugin": "0.9.1",
+    "file-loader": "0.8.5",
+    "html-webpack-plugin": "^2.8.1",
+    "node-sass": "3.4.2",
+    "postcss-loader": "0.8.0",
+    "sass-loader": "3.1.2",
+    "style-loader": "0.13.0",
+    "swig": "1.4.2",
+    "webpack": "1.12.13",
+    "webpack-dev-server": "1.14.0",
+    "webpack-merge": "0.6.0",
+    "writefile": "0.2.8"
+  }
+}
