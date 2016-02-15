@@ -6,9 +6,10 @@
   "description": "A web interface for Mondo banking.",
   "repository": "https://github.com/danpalmer/mondo-web",
   "scripts": {
-    "start": "webpack-dev-server --port 8080",
+    "start": "webpack-dev-server",
     "build": "webpack",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "install-all": "npm install; elm package install --yes"
   },
   "devDependencies": {
     "autoprefixer": "6.2.3",

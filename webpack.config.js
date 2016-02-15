@@ -68,9 +68,9 @@ if (TARGET_ENV === 'prod') {
     module.exports = merge(commonConfig, {
         plugins: [
             new webpack.optimize.UglifyJsPlugin({
-                    minimize: true,
-                    compressor: {warnings: false},
-                    mangle: true
+                minimize: true,
+                compressor: {warnings: false},
+                mangle: true
             })
         ]
     });
