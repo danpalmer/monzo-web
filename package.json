@@ -28,5 +28,9 @@
     "webpack-dev-server": "1.14.0",
     "webpack-merge": "0.6.0",
     "writefile": "0.2.8"
+  },
+  "dependencies": {
+    "bootstrap-sass": "^3.3.6",
+    "url-loader": "^0.5.7"
   }
 }

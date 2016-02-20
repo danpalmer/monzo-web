@@ -1,0 +1,9 @@
+div {
+    .minus, .plus {
+        @extend .btn;
+        @extend .btn-primary;
+    }
+
+    div {
+    }
+}
