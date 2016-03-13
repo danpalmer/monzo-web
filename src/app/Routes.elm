@@ -7,6 +7,7 @@ import TransitRouter
 import Html
 import Html.Events exposing (onWithOptions)
 import Html.Attributes exposing (href)
+import Effects exposing (Effects)
 
 
 -- Routes
@@ -51,6 +52,13 @@ encode route =
 
 
 -- Route Utils
+
+
+redirect : Route -> Effects ()
+redirect route =
+  encode route
+    |> Signal.send TransitRouter.pushPathAddress
+    |> Effects.task
 
 
 linkTo : Route -> String -> Html.Html

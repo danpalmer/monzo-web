@@ -6,6 +6,7 @@ Elm.embed(
   Elm.Main,
   document.getElementById('main'),
   {
-    initialPath: window.location.pathname
+    initialPath: window.location.pathname,
+    initialSeed: (new Date()).getTime()
   }
 );

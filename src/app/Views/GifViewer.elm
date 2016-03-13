@@ -1,4 +1,4 @@
-module GifViewer (Model, init, Action, update, view, onLoadEffect) where
+module Views.GifViewer (Model, init, Action, update, view, onLoadEffect) where
 
 import Effects exposing (Effects, Never)
 import Html exposing (..)

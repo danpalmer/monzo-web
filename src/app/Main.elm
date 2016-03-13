@@ -8,8 +8,9 @@ import Effects exposing (Never, Effects)
 import TransitRouter exposing (..)
 import TransitStyle
 import Routes exposing (..)
-import Login
-import GifViewer
+import Views.Login as Login
+import Views.GifViewer as GifViewer
+import Api.Mondo as Mondo
 
 
 -- Global Model
@@ -26,7 +27,7 @@ type alias Model =
 initialModel : Model
 initialModel =
   { transitRouter = TransitRouter.empty Routes.EmptyRoute
-  , loginModel = Login.init
+  , loginModel = Login.init initialSeed redirectMailbox
   , gifViewerModel = GifViewer.init "funny cats"
   }
 
@@ -67,6 +68,7 @@ mountRoute previous route model =
       ( model, Effects.none )
 
 
+noUpdate : a -> ( a, Effects Action )
 noUpdate =
   (flip (,)) Effects.none
 
@@ -172,3 +174,11 @@ port tasks =
 
 
 port initialPath : String
+port initialSeed : Int
+redirectMailbox =
+  Signal.mailbox ""
+
+
+port redirect : Signal String
+port redirect =
+  redirectMailbox.signal
