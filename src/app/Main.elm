@@ -1,9 +1,11 @@
 import Debug exposing (log)
 import Html exposing (..)
+import Html.Attributes exposing (style, class)
 import Task
 import StartApp
 import Effects exposing (Never, Effects)
 import TransitRouter exposing (..)
+import TransitStyle
 
 import Routes exposing (..)
 
@@ -90,8 +92,8 @@ update action model =
 
 -- Global View
 
-view : Signal.Address Action -> Model -> Html
-view address model =
+contentView : Signal.Address Action -> Model -> Html
+contentView address model =
     case (TransitRouter.getRoute model) of
         Login ->
             Login.view (Signal.forwardTo address LoginAction) model.loginModel
@@ -104,6 +106,15 @@ view address model =
 
         EmptyRoute ->
             text "Application failed to initialise"
+
+view : Signal.Address Action -> Model -> Html
+view address model =
+  div [ class "container-fluid" ] [
+    div [ class "content"
+        , style (TransitStyle.fadeSlideLeft 100 (getTransition model))
+        ]
+        [ contentView address model ]
+    ]
 
 -- Start App
 
