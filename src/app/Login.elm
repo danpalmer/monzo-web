@@ -7,37 +7,51 @@ import Html.Events exposing (onClick)
 import Http
 import Json.Decode as Json
 import Task
-
 import Routes
+
 
 -- Model
 
-type alias Model = {}
+
+type alias Model =
+  {}
+
 
 init : Model
-init = Model
+init =
+  Model
+
+
 
 -- Update
 
-type Action
-    = Login
 
-update : Action -> Model -> (Model, Effects Action)
+type Action
+  = Login
+
+
+update : Action -> Model -> ( Model, Effects Action )
 update msg model =
-    case msg of
-        Login ->
-            ( model
-            , Effects.none
-            )
+  case msg of
+    Login ->
+      ( model
+      , Effects.none
+      )
+
+
 
 -- View
 
-(=>) = (,)
+
+(=>) =
+  (,)
+
 
 view : Signal.Address Action -> Model -> Html
 view address model =
-    div [ style [ "width" => "200px" ] ]
-        [ h2 [] [text "Page 1"]
-        , button [Routes.clickTo Routes.Home] [text "Login Button"]
-        , Routes.linkTo Routes.Home "Login Link"
-        ]
+  div
+    [ style [ "width" => "200px" ] ]
+    [ h2 [] [ text "Page 1" ]
+    , button [ Routes.clickTo Routes.Home ] [ text "Login Button" ]
+    , Routes.linkTo Routes.Home "Login Link"
+    ]
