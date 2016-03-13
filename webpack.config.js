@@ -9,7 +9,7 @@ var TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? 'prod' : 'dev';
 
 var commonConfig = {
 
-    entry: './src/app.js',
+    entry: './src/app/app.js',
 
     output: {
         path: './build',
@@ -39,10 +39,11 @@ var commonConfig = {
             { test: /\.woff2?$/, loader: "url-loader?limit=10000&mimetype=application/font-woff" },
             { test: /\.ttf$/,  loader: "url-loader?limit=10000&mimetype=application/octet-stream" },
             { test: /\.eot$/,  loader: "file-loader" },
-            { test: /\.svg$/,  loader: "url-loader?limit=10000&mimetype=image/svg+xml" }
+            { test: /\.svg$/,  loader: "url-loader?limit=10000&mimetype=image/svg+xml" },
+            { test: /\.(png|jpg|jpeg|gif|woff)$/, loader: 'url-loader?limit=8192' }
         ],
 
-        noParse: /\.elm$/
+        noParse: [/\.elm$/]
     },
 
     plugins: [
