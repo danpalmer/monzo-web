@@ -8,6 +8,8 @@ import Http
 import Json.Decode as Json
 import Task
 
+import Routes
+
 -- Model
 
 type alias Model = {}
@@ -36,5 +38,6 @@ view : Signal.Address Action -> Model -> Html
 view address model =
     div [ style [ "width" => "200px" ] ]
         [ h2 [] [text "Page 1"]
-        , button [onClick address Login] [text "Login"]
+        , button [Routes.clickTo Routes.Home] [text "Login Button"]
+        , Routes.linkTo Routes.Home "Login Link"
         ]
