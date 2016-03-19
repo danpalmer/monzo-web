@@ -1,16 +1,17 @@
-module Views.Login (Model, init, Action, update, view) where
+module Views.Login (Model, init, Action, update, view, mountedRoute) where
 
 import Random exposing (initialSeed, Seed)
 import Effects exposing (Effects, Never)
 import Html exposing (..)
-import Html.Attributes exposing (style, class)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (style, class, href)
 import Http
 import Json.Decode as Json
 import Task
 import Routes
 import Api.Mondo as Mondo
 import Signal
+import Erl
+import Prelude exposing (..)
 
 
 -- Model
@@ -18,6 +19,7 @@ import Signal
 
 type alias Model =
   { randomStateSeed : Seed
+  , redirectUrl : Erl.Url
   , redirectMailbox : Signal.Mailbox String
   }
 
@@ -25,8 +27,20 @@ type alias Model =
 init : Int -> Signal.Mailbox String -> Model
 init seed mailbox =
   { randomStateSeed = initialSeed seed
+  , redirectUrl = Erl.new
   , redirectMailbox = mailbox
   }
+
+
+mountedRoute : Model -> ( Model, Effects Action )
+mountedRoute model =
+  let
+    ( url, seed' ) =
+      Mondo.loginUrl model.randomStateSeed
+  in
+    ( { model | randomStateSeed = seed', redirectUrl = url }
+    , Effects.none
+    )
 
 
 
@@ -34,8 +48,7 @@ init seed mailbox =
 
 
 type Action
-  = PrepareLogin
-  | Redirected
+  = Redirected
     -- Never reached
   | ReceiveLogin
 
@@ -43,15 +56,6 @@ type Action
 update : Action -> Model -> ( Model, Effects Action )
 update msg model =
   case msg of
-    PrepareLogin ->
-      let
-        ( url, seed' ) =
-          Mondo.loginUrl model.randomStateSeed
-      in
-        ( { model | randomStateSeed = seed' }
-        , redirectToUrl model.redirectMailbox url
-        )
-
     otherwise ->
       ( model
       , Effects.none
@@ -69,13 +73,9 @@ redirectToUrl mailbox url =
 -- View
 
 
-(=>) =
-  (,)
-
-
 view : Signal.Address Action -> Model -> Html
 view address model =
   div
     [ style [ "width" => "200px" ] ]
-    [ button [ onClick address PrepareLogin ] [ text "Login" ]
+    [ a [ href (Erl.toString model.redirectUrl) ] [ text "Login" ]
     ]

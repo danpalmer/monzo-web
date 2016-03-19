@@ -19,7 +19,7 @@ randomState seed =
   generate stateGenerator seed
 
 
-loginUrl : Seed -> ( String, Seed )
+loginUrl : Seed -> ( Erl.Url, Seed )
 loginUrl seed =
   let
     url =
@@ -28,15 +28,14 @@ loginUrl seed =
     ( state, seed' ) =
       (randomState seed)
   in
-    ( Erl.toString
-        { url
-          | query =
-              Dict.fromList
-                [ "client_id" => "red"
-                , "redirect_uri" => "10"
-                , "response_type" => "code"
-                , "state" => state
-                ]
-        }
+    ( { url
+        | query =
+            Dict.fromList
+              [ "client_id" => "red"
+              , "redirect_uri" => "10"
+              , "response_type" => "code"
+              , "state" => state
+              ]
+      }
     , seed'
     )

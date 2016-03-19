@@ -62,7 +62,13 @@ mountRoute previous route model =
       noUpdate model
 
     Login ->
-      noUpdate model
+      let
+        ( model', effects' ) =
+          Login.mountedRoute model.loginModel
+      in
+        ( { model | loginModel = model' }
+        , Effects.map LoginAction effects'
+        )
 
     Home ->
       ( model, Effects.none )
