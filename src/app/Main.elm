@@ -11,6 +11,7 @@ import Routes exposing (..)
 import Views.Login as Login
 import Views.GifViewer as GifViewer
 import Api.Mondo as Mondo
+import Erl
 
 
 -- Global Model
@@ -27,7 +28,7 @@ type alias Model =
 initialModel : Model
 initialModel =
   { transitRouter = TransitRouter.empty Routes.EmptyRoute
-  , loginModel = Login.init initialSeed redirectMailbox
+  , loginModel = Login.init initialSeed redirectMailbox (Erl.parse baseUrl)
   , gifViewerModel = GifViewer.init "funny cats"
   }
 
@@ -181,10 +182,11 @@ port tasks =
 
 port initialPath : String
 port initialSeed : Int
-redirectMailbox =
-  Signal.mailbox ""
-
-
+port baseUrl : String
 port redirect : Signal String
 port redirect =
   redirectMailbox.signal
+
+
+redirectMailbox =
+  Signal.mailbox ""

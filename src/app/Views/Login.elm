@@ -19,14 +19,16 @@ import Prelude exposing (..)
 
 type alias Model =
   { randomStateSeed : Seed
+  , baseUrl : Erl.Url
   , redirectUrl : Erl.Url
   , redirectMailbox : Signal.Mailbox String
   }
 
 
-init : Int -> Signal.Mailbox String -> Model
-init seed mailbox =
+init : Int -> Signal.Mailbox String -> Erl.Url -> Model
+init seed mailbox baseUrl =
   { randomStateSeed = initialSeed seed
+  , baseUrl = baseUrl
   , redirectUrl = Erl.new
   , redirectMailbox = mailbox
   }
@@ -35,8 +37,11 @@ init seed mailbox =
 mountedRoute : Model -> ( Model, Effects Action )
 mountedRoute model =
   let
+    returnUrl =
+      Erl.appendPathSegments [ "receive" ] model.baseUrl
+
     ( url, seed' ) =
-      Mondo.loginUrl model.randomStateSeed
+      Mondo.loginUrl model.randomStateSeed returnUrl
   in
     ( { model | randomStateSeed = seed', redirectUrl = url }
     , Effects.none

@@ -19,8 +19,8 @@ randomState seed =
   generate stateGenerator seed
 
 
-loginUrl : Seed -> ( Erl.Url, Seed )
-loginUrl seed =
+loginUrl : Seed -> Erl.Url -> ( Erl.Url, Seed )
+loginUrl seed redirectUrl =
   let
     url =
       Erl.parse "https://auth.getmondo.co.uk/"
@@ -31,8 +31,8 @@ loginUrl seed =
     ( { url
         | query =
             Dict.fromList
-              [ "client_id" => "red"
-              , "redirect_uri" => "10"
+              [ "client_id" => "oauthclient_0000968G0rIJ6Uc40n0iHZ"
+              , "redirect_uri" => Erl.toString redirectUrl
               , "response_type" => "code"
               , "state" => state
               ]
