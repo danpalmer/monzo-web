@@ -14,6 +14,7 @@ Elm.embed(
   {
     initialPath: window.location.pathname,
     initialSeed: (new Date()).getTime(),
-    baseUrl: baseUrl
+    baseUrl: baseUrl,
+    query: window.location.search
   }
 );

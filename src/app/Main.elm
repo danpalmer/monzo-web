@@ -10,8 +10,11 @@ import TransitStyle
 import Routes exposing (..)
 import Views.Login as Login
 import Views.GifViewer as GifViewer
+import Views.ReceiveAuth as ReceiveAuth
 import Api.Mondo as Mondo
 import Erl
+import Dict exposing (Dict)
+import Prelude exposing (parseSearchString)
 
 
 -- Global Model
@@ -21,6 +24,7 @@ type alias Model =
   WithRoute
     Routes.Route
     { loginModel : Login.Model
+    , receiveAuthModel : ReceiveAuth.Model
     , gifViewerModel : GifViewer.Model
     }
 
@@ -28,7 +32,8 @@ type alias Model =
 initialModel : Model
 initialModel =
   { transitRouter = TransitRouter.empty Routes.EmptyRoute
-  , loginModel = Login.init initialSeed redirectMailbox (Erl.parse baseUrl)
+  , loginModel = Login.init initialSeed (Erl.parse baseUrl)
+  , receiveAuthModel = ReceiveAuth.init parameters
   , gifViewerModel = GifViewer.init "funny cats"
   }
 
@@ -40,6 +45,7 @@ initialModel =
 type Action
   = NoOp
   | LoginAction Login.Action
+  | ReceiveAuthAction ReceiveAuth.Action
   | GifViewerAction GifViewer.Action
   | RouterAction (TransitRouter.Action Routes.Route)
 
@@ -56,12 +62,6 @@ actions =
 mountRoute : Route -> Route -> Model -> ( Model, Effects Action )
 mountRoute previous route model =
   case route of
-    NotFound ->
-      noUpdate model
-
-    EmptyRoute ->
-      noUpdate model
-
     Login ->
       let
         ( model', effects' ) =
@@ -71,8 +71,17 @@ mountRoute previous route model =
         , Effects.map LoginAction effects'
         )
 
-    Home ->
-      ( model, Effects.none )
+    ReceiveAuth ->
+      let
+        ( model', effects' ) =
+          ReceiveAuth.mountedRoute model.receiveAuthModel
+      in
+        ( { model | receiveAuthModel = model' }
+        , Effects.map ReceiveAuthAction effects'
+        )
+
+    otherwise ->
+      noUpdate model
 
 
 noUpdate : a -> ( a, Effects Action )
@@ -101,20 +110,15 @@ init initialPath =
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
   case action of
-    NoOp ->
-      ( model, Effects.none )
-
     RouterAction routeAction ->
       TransitRouter.update routerConfig routeAction model
 
-    LoginAction loginAction ->
+    ReceiveAuthAction receiveAuthAction ->
       let
         ( model', effects ) =
-          Login.update loginAction model.loginModel
+          ReceiveAuth.update receiveAuthAction model.receiveAuthModel
       in
-        ( { model | loginModel = model' }
-        , Effects.map LoginAction effects
-        )
+        ( { model | receiveAuthModel = model' }, Effects.map ReceiveAuthAction effects )
 
     GifViewerAction gifAction ->
       let
@@ -124,6 +128,9 @@ update action model =
         ( { model | gifViewerModel = model' }
         , Effects.map GifViewerAction effects
         )
+
+    otherwise ->
+      ( model, Effects.none )
 
 
 
@@ -144,6 +151,9 @@ contentView address model =
 
     EmptyRoute ->
       text "Application failed to initialise"
+
+    ReceiveAuth ->
+      ReceiveAuth.view (Signal.forwardTo address ReceiveAuthAction) model.receiveAuthModel
 
 
 view : Signal.Address Action -> Model -> Html
@@ -175,6 +185,10 @@ main =
   app.html
 
 
+
+-- Ports
+
+
 port tasks : Signal (Task.Task Never ())
 port tasks =
   app.tasks
@@ -190,3 +204,13 @@ port redirect =
 
 redirectMailbox =
   Signal.mailbox ""
+
+
+port query : String
+parameters : Dict String String
+parameters =
+  let
+    maybeParams =
+      parseSearchString query
+  in
+    Maybe.withDefault Dict.empty maybeParams

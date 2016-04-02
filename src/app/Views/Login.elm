@@ -1,17 +1,18 @@
-module Views.Login (Model, init, Action, update, view, mountedRoute) where
+module Views.Login (Model, init, Action, view, mountedRoute) where
 
 import Random exposing (initialSeed, Seed)
 import Effects exposing (Effects, Never)
 import Html exposing (..)
 import Html.Attributes exposing (style, class, href)
 import Http
-import Json.Decode as Json
+import Json.Encode
 import Task
 import Routes
 import Api.Mondo as Mondo
 import Signal
 import Erl
 import Prelude exposing (..)
+import Storage
 
 
 -- Model
@@ -21,16 +22,14 @@ type alias Model =
   { randomStateSeed : Seed
   , baseUrl : Erl.Url
   , redirectUrl : Erl.Url
-  , redirectMailbox : Signal.Mailbox String
   }
 
 
-init : Int -> Signal.Mailbox String -> Erl.Url -> Model
-init seed mailbox baseUrl =
+init : Int -> Erl.Url -> Model
+init seed baseUrl =
   { randomStateSeed = initialSeed seed
   , baseUrl = baseUrl
   , redirectUrl = Erl.new
-  , redirectMailbox = mailbox
   }
 
 
@@ -40,11 +39,11 @@ mountedRoute model =
     returnUrl =
       Erl.appendPathSegments [ "receive" ] model.baseUrl
 
-    ( url, seed' ) =
+    ( url, state, seed' ) =
       Mondo.loginUrl model.randomStateSeed returnUrl
   in
     ( { model | randomStateSeed = seed', redirectUrl = url }
-    , Effects.none
+    , setStateInStorage state
     )
 
 
@@ -53,25 +52,7 @@ mountedRoute model =
 
 
 type Action
-  = Redirected
-    -- Never reached
-  | ReceiveLogin
-
-
-update : Action -> Model -> ( Model, Effects Action )
-update msg model =
-  case msg of
-    otherwise ->
-      ( model
-      , Effects.none
-      )
-
-
-redirectToUrl mailbox url =
-  Signal.send mailbox.address url
-    |> Task.map (\_ -> Redirected)
-    |> flip Task.onError (\_ -> Task.succeed Redirected)
-    |> Effects.task
+  = StoredState (Result String ())
 
 
 
@@ -84,3 +65,15 @@ view address model =
     [ style [ "width" => "200px" ] ]
     [ a [ href (Erl.toString model.redirectUrl) ] [ text "Login" ]
     ]
+
+
+
+-- Effects
+
+
+setStateInStorage : String -> Effects Action
+setStateInStorage state =
+  Storage.setItem Mondo.mondoOAuthStateKey (Json.Encode.string state)
+    |> Task.toResult
+    |> Task.map StoredState
+    |> Effects.task

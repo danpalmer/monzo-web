@@ -15,6 +15,7 @@ import Effects exposing (Effects)
 
 type Route
   = Login
+  | ReceiveAuth
   | Home
   | NotFound
   | EmptyRoute
@@ -23,6 +24,7 @@ type Route
 routeParsers : List (Matcher Route)
 routeParsers =
   [ static Login "/"
+  , static ReceiveAuth "/receive"
   , static Home "/account"
   , static NotFound "/404"
   ]
@@ -39,6 +41,9 @@ encode route =
   case route of
     Login ->
       "/"
+
+    ReceiveAuth ->
+      "/receive"
 
     Home ->
       "/account"
