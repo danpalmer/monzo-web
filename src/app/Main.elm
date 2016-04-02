@@ -33,7 +33,7 @@ initialModel : Model
 initialModel =
   { transitRouter = TransitRouter.empty Routes.EmptyRoute
   , loginModel = Login.init initialSeed (Erl.parse baseUrl)
-  , receiveAuthModel = ReceiveAuth.init parameters
+  , receiveAuthModel = ReceiveAuth.init parameters (Erl.parse baseUrl)
   , gifViewerModel = GifViewer.init "funny cats"
   }
 
@@ -150,7 +150,7 @@ contentView address model =
       text "Not Found"
 
     EmptyRoute ->
-      text "Application failed to initialise"
+      text "Loading..."
 
     ReceiveAuth ->
       ReceiveAuth.view (Signal.forwardTo address ReceiveAuthAction) model.receiveAuthModel

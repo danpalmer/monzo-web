@@ -28,15 +28,17 @@ type AuthState
 
 
 type alias Model =
-  { authDetails : Dict String String
+  { receivedDetails : Dict String String
   , authState : AuthState
+  , baseUrl : Erl.Url
   }
 
 
-init : Dict String String -> Model
-init authDetails =
-  { authDetails = authDetails
+init : Dict String String -> Erl.Url -> Model
+init receivedDetails baseUrl =
+  { receivedDetails = receivedDetails
   , authState = AuthLoading
+  , baseUrl = baseUrl
   }
 
 
@@ -51,7 +53,7 @@ mountedRoute model =
 
 type Action
   = LoadedState (Maybe String)
-  | ReceiveToken
+  | ReceiveAuthDetails (Maybe Mondo.AuthDetails)
   | Done
 
 
@@ -61,7 +63,7 @@ update msg model =
     LoadedState (Just state) ->
       if (isValidState model state) then
         ( { model | authState = AuthDone }
-        , Effects.none
+        , getAuthToken model
         )
       else
         ( { model | authState = AuthErrored }
@@ -73,18 +75,30 @@ update msg model =
       , Effects.none
       )
 
-    -- TODO: handle error states here.
-    otherwise ->
+    ReceiveAuthDetails (Just authDetails) ->
       Debug.log
-        "here"
-        ( model
+        "success"
+        ( { model | authState = AuthDone }
         , Effects.none
         )
+
+    ReceiveAuthDetails Nothing ->
+      Debug.log
+        "here"
+        ( { model | authState = AuthErrored }
+        , Effects.none
+        )
+
+    -- TODO: handle error states here.
+    otherwise ->
+      ( model
+      , Effects.none
+      )
 
 
 isValidState : Model -> String -> Bool
 isValidState model state =
-  case Dict.get "state" model.authDetails of
+  case Dict.get "state" model.receivedDetails of
     Nothing ->
       False
 
@@ -119,3 +133,17 @@ getStateFromStorage =
     |> Task.toMaybe
     |> Task.map LoadedState
     |> Effects.task
+
+
+getAuthToken : Model -> Effects Action
+getAuthToken model =
+  let
+    redirectUrl =
+      Erl.appendPathSegments [ "receive" ] model.baseUrl
+
+    code =
+      Maybe.withDefault "" (Dict.get "code" model.receivedDetails)
+  in
+    Mondo.exchangeAuthCode code redirectUrl
+      |> Task.map ReceiveAuthDetails
+      |> Effects.task
