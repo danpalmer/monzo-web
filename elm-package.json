@@ -5,7 +5,7 @@
     "license": "BSD3",
     "source-directories": [
         "src/app",
-        "lib/elm-storage"
+        "lib/elm-storage/src"
     ],
     "exposed-modules": [],
     "native-modules": true,
