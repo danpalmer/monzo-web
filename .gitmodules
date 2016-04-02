@@ -1,0 +1,3 @@
+[submodule "lib/elm-storage"]
+	path = lib/elm-storage
+	url = git@github.com:danpalmer/elm-storage.git
