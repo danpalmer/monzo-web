@@ -15,6 +15,7 @@ import Dict exposing (Dict)
 import String
 import Settings
 import LocalStorage
+import Utils.Auth as Auth
 
 
 -- Model
@@ -55,10 +56,10 @@ mountedRoute model =
 type Msg
     = LoadedState String
     | ErrorLoadingState LocalStorage.Error
-    | ReceiveAuthDetails Mondo.AuthDetails
-    | ErrorExchangingAuthDetails (HttpBuilder.Error String)
-    | PersistedAuthDetails ()
-    | ErrorPersistingAuthDetails LocalStorage.Error
+    | ReceiveApiAuthDetails Mondo.ApiAuthDetails
+    | ErrorExchangingApiAuthDetails (HttpBuilder.Error String)
+    | PersistedApiAuthDetails ()
+    | ErrorPersistingApiAuthDetails LocalStorage.Error
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -79,12 +80,13 @@ update msg model =
             , Cmd.none
             )
 
-        ReceiveAuthDetails authDetails ->
+        ReceiveApiAuthDetails authDetails ->
             ( { model | authState = AuthDone }
-            , setAccessTokenInStorage authDetails model.appStartTime
+            , setAuthDetailsInStorage
+                (Auth.apiAuthDetailsToAuthDetails authDetails model.appStartTime)
             )
 
-        ErrorExchangingAuthDetails _ ->
+        ErrorExchangingApiAuthDetails _ ->
             ( { model | authState = AuthErrored }
             , Cmd.none
             )
@@ -127,6 +129,12 @@ view model =
 -- Cmd
 
 
+setAuthDetailsInStorage : Auth.AuthDetails -> Cmd Msg
+setAuthDetailsInStorage authDetails =
+    Auth.setAuthDetailsInStorage authDetails
+        |> Task.perform ErrorPersistingApiAuthDetails PersistedApiAuthDetails
+
+
 getStateFromStorage : Cmd Msg
 getStateFromStorage =
     LocalStorage.get Settings.mondoOAuthStateKey
@@ -143,23 +151,4 @@ getAuthToken model =
             Maybe.withDefault "" (Dict.get "code" model.receivedDetails)
     in
         Mondo.exchangeAuthCode code redirectUrl
-            |> Task.perform ErrorExchangingAuthDetails ReceiveAuthDetails
-
-
-setAccessTokenInStorage : Mondo.AuthDetails -> Int -> Cmd Msg
-setAccessTokenInStorage authDetails appStartTime =
-    let
-        expiresAt =
-            appStartTime + (authDetails.expiresIn * 1000)
-
-        jsonAuthDetails =
-            JE.encode 0
-                (JE.object
-                    [ ( "access_token", JE.string authDetails.accessToken )
-                    , ( "expires_at", JE.int expiresAt )
-                    , ( "user_id", JE.string authDetails.userID )
-                    ]
-                )
-    in
-        LocalStorage.set Settings.authDetailsKey jsonAuthDetails
-            |> Task.perform ErrorPersistingAuthDetails PersistedAuthDetails
+            |> Task.perform ErrorExchangingApiAuthDetails ReceiveApiAuthDetails

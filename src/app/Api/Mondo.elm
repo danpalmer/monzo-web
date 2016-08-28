@@ -38,14 +38,14 @@ loginUrl state redirectUrl =
 -- Access Token
 
 
-type alias AuthDetails =
+type alias ApiAuthDetails =
     { accessToken : String
     , expiresIn : Int
     , userID : String
     }
 
 
-exchangeAuthCode : String -> Erl.Url -> Task (Error String) AuthDetails
+exchangeAuthCode : String -> Erl.Url -> Task (Error String) ApiAuthDetails
 exchangeAuthCode code redirectUrl =
     let
         data =
@@ -59,14 +59,14 @@ exchangeAuthCode code redirectUrl =
         post "https://api.getmondo.co.uk/oauth2/token"
             |> withUrlEncodedBody data
             |> withHeader "Content-type" "application/x-www-form-urlencoded"
-            |> send (jsonReader decodeAuthDetails) stringReader
+            |> send (jsonReader decodeApiAuthDetails) stringReader
             |> Task.map (\response -> response.data)
 
 
-decodeAuthDetails : JD.Decoder AuthDetails
-decodeAuthDetails =
+decodeApiAuthDetails : JD.Decoder ApiAuthDetails
+decodeApiAuthDetails =
     JD.object3
-        AuthDetails
+        ApiAuthDetails
         ("access_token" := JD.string)
         ("expires_in" := JD.int)
         ("user_id" := JD.string)

@@ -1,11 +1,16 @@
 module Prelude exposing (..)
 
 import Dict exposing (Dict)
+import Task
 import String
 
 
 (=>) =
     (,)
+
+
+andThen =
+    flip Task.andThen
 
 
 splitAtFirst : Char -> String -> ( String, String )

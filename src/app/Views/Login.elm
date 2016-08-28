@@ -7,7 +7,8 @@ import Platform.Cmd
 import Html exposing (..)
 import Html.Attributes exposing (style, class, href)
 import Http
-import Json.Encode
+import Json.Decode as JD
+import Json.Decode as JD exposing ((:=))
 import Task
 import Settings
 import Routes
@@ -15,6 +16,8 @@ import Api.Mondo as Mondo
 import Erl
 import Prelude exposing (..)
 import LocalStorage
+import Utils.Auth as Auth
+import Debug
 
 
 -- Model
@@ -53,7 +56,9 @@ mountedRoute model =
 
 
 type Msg
-    = GeneratedState String
+    = ReadPersistedAuth Auth.AuthDetails
+    | FailedToReadPersistedAuth String
+    | GeneratedState String
     | StoredState ()
     | FailedToStoreState ()
 
@@ -72,6 +77,12 @@ update msg model =
                 ( { model | redirectUrl = url }
                 , setStateInStorage state
                 )
+
+        ReadPersistedAuth authDetails ->
+            Debug.crash "undefined"
+
+        FailedToReadPersistedAuth _ ->
+            ( model, generate GeneratedState (string 20 english) )
 
         StoredState _ ->
             ( { model | readyState = Ready }, Cmd.none )
@@ -102,6 +113,12 @@ view model =
 
 
 -- Cmd
+
+
+getAuthDetailsFromStorage : Int -> Cmd Msg
+getAuthDetailsFromStorage appStartTime =
+    Auth.getAuthDetailsFromStorage appStartTime
+        |> Task.perform FailedToReadPersistedAuth ReadPersistedAuth
 
 
 setStateInStorage : String -> Cmd Msg
