@@ -1,20 +1,20 @@
-module Views.ReceiveAuth (Model, init, Action, update, view, mountedRoute) where
+module Views.ReceiveAuth exposing (Model, init, Msg, update, view, mountedRoute)
 
 import Random exposing (initialSeed, Seed)
-import Effects exposing (Effects, Never)
 import Html exposing (..)
 import Html.Attributes exposing (style, class, href)
 import Http
+import HttpBuilder
 import Json.Decode
 import Task
 import Routes
 import Api.Mondo as Mondo
-import Signal
 import Erl
 import Prelude exposing (..)
 import Dict exposing (Dict)
 import String
-import Storage
+import Settings
+import LocalStorage
 import Debug
 
 
@@ -22,128 +22,123 @@ import Debug
 
 
 type AuthState
-  = AuthLoading
-  | AuthErrored
-  | AuthDone
+    = AuthLoading
+    | AuthErrored
+    | AuthDone
 
 
 type alias Model =
-  { receivedDetails : Dict String String
-  , authState : AuthState
-  , baseUrl : Erl.Url
-  }
+    { receivedDetails : Dict String String
+    , authState : AuthState
+    , baseUrl : Erl.Url
+    }
 
 
 init : Dict String String -> Erl.Url -> Model
 init receivedDetails baseUrl =
-  { receivedDetails = receivedDetails
-  , authState = AuthLoading
-  , baseUrl = baseUrl
-  }
+    { receivedDetails = receivedDetails
+    , authState = AuthLoading
+    , baseUrl = baseUrl
+    }
 
 
-mountedRoute : Model -> ( Model, Effects Action )
+mountedRoute : Model -> ( Model, Cmd Msg )
 mountedRoute model =
-  ( model, getStateFromStorage )
+    ( model, getStateFromStorage )
 
 
 
 -- Update
 
 
-type Action
-  = LoadedState (Maybe String)
-  | ReceiveAuthDetails (Maybe Mondo.AuthDetails)
-  | Done
+type Msg
+    = LoadedState String
+    | ErrorLoadingState LocalStorage.Error
+    | ReceiveAuthDetails Mondo.AuthDetails
+    | ErrorExchangingAuthDetails (HttpBuilder.Error String)
+    | Done
 
 
-update : Action -> Model -> ( Model, Effects Action )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  case msg of
-    LoadedState (Just state) ->
-      if (isValidState model state) then
-        ( { model | authState = AuthDone }
-        , getAuthToken model
-        )
-      else
-        ( { model | authState = AuthErrored }
-        , Effects.none
-        )
+    case Debug.log "ReceiveAuth.update" msg of
+        LoadedState state ->
+            if (isValidState model state) then
+                ( { model | authState = AuthDone }
+                , getAuthToken model
+                )
+            else
+                ( { model | authState = AuthErrored }
+                , Cmd.none
+                )
 
-    LoadedState Nothing ->
-      ( { model | authState = AuthErrored }
-      , Effects.none
-      )
+        ErrorLoadingState _ ->
+            ( { model | authState = AuthErrored }
+            , Cmd.none
+            )
 
-    ReceiveAuthDetails (Just authDetails) ->
-      Debug.log
-        "success"
-        ( { model | authState = AuthDone }
-        , Effects.none
-        )
+        ReceiveAuthDetails authDetails ->
+            ( { model | authState = AuthDone }
+            , Cmd.none
+            )
 
-    ReceiveAuthDetails Nothing ->
-      Debug.log
-        "here"
-        ( { model | authState = AuthErrored }
-        , Effects.none
-        )
+        ErrorExchangingAuthDetails _ ->
+            ( { model | authState = AuthErrored }
+            , Cmd.none
+            )
 
-    -- TODO: handle error states here.
-    otherwise ->
-      ( model
-      , Effects.none
-      )
+        -- TODO: handle error states here.
+        otherwise ->
+            ( model
+            , Cmd.none
+            )
 
 
 isValidState : Model -> String -> Bool
 isValidState model state =
-  case Dict.get "state" model.receivedDetails of
-    Nothing ->
-      False
+    case Dict.get "state" model.receivedDetails of
+        Nothing ->
+            False
 
-    Just state' ->
-      state == state'
+        Just state' ->
+            state == state'
 
 
 
 -- View
 
 
-view : Signal.Address Action -> Model -> Html
-view address model =
-  case model.authState of
-    AuthLoading ->
-      h3 [] [ text "Loading..." ]
+view : Model -> Html Msg
+view model =
+    case model.authState of
+        AuthLoading ->
+            h3 [] [ text "Loading..." ]
 
-    AuthErrored ->
-      h3 [] [ text "Error loading, please try again" ]
+        AuthErrored ->
+            h3 [] [ text "Error loading, please try again" ]
 
-    AuthDone ->
-      h3 [] [ text "Loaded." ]
-
-
-
--- Effects
+        AuthDone ->
+            h3 [] [ text "Loaded." ]
 
 
-getStateFromStorage : Effects Action
+
+-- Cmd
+
+
+getStateFromStorage : Cmd Msg
 getStateFromStorage =
-  Storage.getItem Mondo.mondoOAuthStateKey Json.Decode.string
-    |> Task.toMaybe
-    |> Task.map LoadedState
-    |> Effects.task
+    LocalStorage.get Settings.mondoOAuthStateKey
+        |> Task.perform ErrorLoadingState LoadedState
 
 
-getAuthToken : Model -> Effects Action
+getAuthToken : Model -> Cmd Msg
 getAuthToken model =
-  let
-    redirectUrl =
-      Erl.appendPathSegments [ "receive" ] model.baseUrl
+    let
+        redirectUrl =
+            Erl.appendPathSegments [ "receive" ] model.baseUrl
 
-    code =
-      Maybe.withDefault "" (Dict.get "code" model.receivedDetails)
-  in
-    Mondo.exchangeAuthCode code redirectUrl
-      |> Task.map ReceiveAuthDetails
-      |> Effects.task
+        code =
+            Maybe.withDefault "" (Dict.get "code" model.receivedDetails)
+    in
+        Mondo.exchangeAuthCode code redirectUrl
+            |> Task.perform ErrorExchangingAuthDetails ReceiveAuthDetails

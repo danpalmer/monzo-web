@@ -1,3 +1,3 @@
-[submodule "lib/elm-storage"]
-	path = lib/elm-storage
-	url = git@github.com:danpalmer/elm-storage.git
+[submodule "lib/local-storage"]
+	path = lib/local-storage
+	url = git@github.com:elm-lang/local-storage.git

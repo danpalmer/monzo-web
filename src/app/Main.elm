@@ -1,15 +1,12 @@
-module Main (..) where
+module Main exposing (..)
 
+import Navigation
 import Html exposing (..)
+import Html.App
 import Html.Attributes exposing (style, class)
 import Task
-import StartApp
-import Effects exposing (Never, Effects)
-import TransitRouter exposing (..)
-import TransitStyle
-import Routes exposing (..)
+import Routes
 import Views.Login as Login
-import Views.GifViewer as GifViewer
 import Views.ReceiveAuth as ReceiveAuth
 import Api.Mondo as Mondo
 import Erl
@@ -17,200 +14,170 @@ import Dict exposing (Dict)
 import Prelude exposing (parseSearchString)
 
 
+type alias Flags =
+    { initialPath : String
+    , initialSeed : Int
+    , baseUrl : String
+    , query : String
+    }
+
+
+main =
+    Navigation.programWithFlags (Navigation.makeParser Routes.decode)
+        { init = init
+        , view = view
+        , update = update
+        , urlUpdate = urlUpdate
+        , subscriptions = subscriptions
+        }
+
+
+
 -- Global Model
 
 
 type alias Model =
-  WithRoute
-    Routes.Route
-    { loginModel : Login.Model
+    { currentRoute : Routes.Route
+    , loginModel : Login.Model
     , receiveAuthModel : ReceiveAuth.Model
-    , gifViewerModel : GifViewer.Model
+    , flags : Flags
     }
 
 
-initialModel : Model
-initialModel =
-  { transitRouter = TransitRouter.empty Routes.EmptyRoute
-  , loginModel = Login.init initialSeed (Erl.parse baseUrl)
-  , receiveAuthModel = ReceiveAuth.init parameters (Erl.parse baseUrl)
-  , gifViewerModel = GifViewer.init "funny cats"
-  }
+initialModel : Flags -> Model
+initialModel flags =
+    let
+        baseUrl =
+            Erl.parse flags.baseUrl
+
+        params =
+            (parameters flags.query)
+    in
+        { currentRoute = Routes.decodePathOr404 flags.initialPath
+        , loginModel = Login.init flags.initialSeed baseUrl
+        , receiveAuthModel = ReceiveAuth.init params baseUrl
+        , flags = flags
+        }
+
+
+init : Flags -> Result String Routes.Route -> ( Model, Cmd Msg )
+init flags result =
+    urlUpdate result (initialModel flags)
 
 
 
--- Global Action
+-- Update
 
 
-type Action
-  = NoOp
-  | LoginAction Login.Action
-  | ReceiveAuthAction ReceiveAuth.Action
-  | GifViewerAction GifViewer.Action
-  | RouterAction (TransitRouter.Action Routes.Route)
-
-
-actions : Signal Action
-actions =
-  Signal.map RouterAction TransitRouter.actions
-
-
-
--- Global Routing
-
-
-mountRoute : Route -> Route -> Model -> ( Model, Effects Action )
-mountRoute previous route model =
-  case route of
-    Login ->
-      let
-        ( model', effects' ) =
-          Login.mountedRoute model.loginModel
-      in
-        ( { model | loginModel = model' }
-        , Effects.map LoginAction effects'
-        )
-
-    ReceiveAuth ->
-      let
-        ( model', effects' ) =
-          ReceiveAuth.mountedRoute model.receiveAuthModel
-      in
-        ( { model | receiveAuthModel = model' }
-        , Effects.map ReceiveAuthAction effects'
-        )
-
-    otherwise ->
-      noUpdate model
-
-
-noUpdate : a -> ( a, Effects Action )
-noUpdate =
-  (flip (,)) Effects.none
-
-
-routerConfig : TransitRouter.Config Routes.Route Action Model
-routerConfig =
-  { mountRoute = mountRoute
-  , getDurations = \_ _ _ -> ( 50, 50 )
-  , actionWrapper = RouterAction
-  , routeDecoder = Routes.decode
-  }
-
-
-init : String -> ( Model, Effects Action )
-init initialPath =
-  TransitRouter.init routerConfig initialPath initialModel
+type Msg
+    = NoOp
+    | LoginMsg Login.Msg
+    | ReceiveAuthMsg ReceiveAuth.Msg
+    | Navigate Routes.Route
 
 
 
 -- Global Update
 
 
-update : Action -> Model -> ( Model, Effects Action )
-update action model =
-  case action of
-    RouterAction routeAction ->
-      TransitRouter.update routerConfig routeAction model
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        Navigate route ->
+            { model | currentRoute = route }
+                ! [ Navigation.newUrl (Routes.encode route) ]
 
-    ReceiveAuthAction receiveAuthAction ->
-      let
-        ( model', effects ) =
-          ReceiveAuth.update receiveAuthAction model.receiveAuthModel
-      in
-        ( { model | receiveAuthModel = model' }, Effects.map ReceiveAuthAction effects )
+        LoginMsg loginMsg ->
+            let
+                ( model', msg ) =
+                    Login.update loginMsg model.loginModel
+            in
+                ( { model | loginModel = model' }, Cmd.map LoginMsg msg )
 
-    GifViewerAction gifAction ->
-      let
-        ( model', effects ) =
-          GifViewer.update gifAction model.gifViewerModel
-      in
-        ( { model | gifViewerModel = model' }
-        , Effects.map GifViewerAction effects
-        )
+        ReceiveAuthMsg receiveAuthMsg ->
+            let
+                ( model', msg ) =
+                    ReceiveAuth.update receiveAuthMsg model.receiveAuthModel
+            in
+                ( { model | receiveAuthModel = model' }, Cmd.map ReceiveAuthMsg msg )
 
-    otherwise ->
-      ( model, Effects.none )
+        otherwise ->
+            ( model, Cmd.none )
+
+
+urlUpdate : Result String Routes.Route -> Model -> ( Model, Cmd Msg )
+urlUpdate result model =
+    case result of
+        Err str ->
+            Debug.log str ( model, Cmd.none )
+
+        Ok route ->
+            case route of
+                Routes.Login ->
+                    let
+                        ( model', msg ) =
+                            Login.mountedRoute model.loginModel
+                    in
+                        ( { model | loginModel = model' }, Cmd.map LoginMsg msg )
+
+                Routes.ReceiveAuth ->
+                    let
+                        ( model', msg ) =
+                            ReceiveAuth.mountedRoute model.receiveAuthModel
+                    in
+                        ( { model | receiveAuthModel = model' }, Cmd.map ReceiveAuthMsg msg )
+
+                otherwise ->
+                    ( model, Cmd.none )
 
 
 
 -- Global View
 
 
-contentView : Signal.Address Action -> Model -> Html
-contentView address model =
-  case (TransitRouter.getRoute model) of
-    Login ->
-      Login.view (Signal.forwardTo address LoginAction) model.loginModel
+contentView : Model -> Html Msg
+contentView model =
+    case model.currentRoute of
+        Routes.Login ->
+            Html.App.map LoginMsg (Login.view model.loginModel)
 
-    Home ->
-      GifViewer.view (Signal.forwardTo address GifViewerAction) model.gifViewerModel
+        Routes.ReceiveAuth ->
+            Html.App.map ReceiveAuthMsg (ReceiveAuth.view model.receiveAuthModel)
 
-    NotFound ->
-      text "Not Found"
+        Routes.Home ->
+            text "Home"
 
-    EmptyRoute ->
-      text "Loading..."
+        Routes.NotFound ->
+            text "Not Found"
 
-    ReceiveAuth ->
-      ReceiveAuth.view (Signal.forwardTo address ReceiveAuthAction) model.receiveAuthModel
+        Routes.EmptyRoute ->
+            text "Loading..."
 
 
-view : Signal.Address Action -> Model -> Html
-view address model =
-  div
-    [ class "container-fluid" ]
-    [ div
-        [ class "content"
-        , style (TransitStyle.fadeSlideLeft 100 (getTransition model))
+view : Model -> Html Msg
+view model =
+    div
+        [ class "container-fluid" ]
+        [ div
+            [ class "content"
+            ]
+            [ contentView model ]
         ]
-        [ contentView address model ]
-    ]
+
+
+parameters : String -> Dict String String
+parameters query =
+    let
+        maybeParams =
+            parseSearchString query
+    in
+        Maybe.withDefault Dict.empty maybeParams
 
 
 
--- Start App
+-- Subscriptions
 
 
-app =
-  StartApp.start
-    { init = init initialPath
-    , update = update
-    , view = view
-    , inputs = [ actions ]
-    }
-
-
-main =
-  app.html
-
-
-
--- Ports
-
-
-port tasks : Signal (Task.Task Never ())
-port tasks =
-  app.tasks
-
-
-port initialPath : String
-port initialSeed : Int
-port baseUrl : String
-port redirect : Signal String
-port redirect =
-  redirectMailbox.signal
-
-
-redirectMailbox =
-  Signal.mailbox ""
-
-
-port query : String
-parameters : Dict String String
-parameters =
-  let
-    maybeParams =
-      parseSearchString query
-  in
-    Maybe.withDefault Dict.empty maybeParams
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none

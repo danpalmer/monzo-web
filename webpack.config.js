@@ -25,8 +25,8 @@ var commonConfig = {
         loaders: [
             {
                 test:    /\.elm$/,
-                exclude: [/node_modules/],
-                loader:  'elm-webpack'
+                exclude: [/elm-stuff/, /node_modules/],
+                loader:  'elm-hot!elm-webpack'
             },
             {
                 test: /\.(css|scss)$/,
