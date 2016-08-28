@@ -17,6 +17,7 @@ import Prelude exposing (parseSearchString)
 type alias Flags =
     { initialPath : String
     , initialSeed : Int
+    , startTime : Int
     , baseUrl : String
     , query : String
     }
@@ -55,7 +56,7 @@ initialModel flags =
     in
         { currentRoute = Routes.decodePathOr404 flags.initialPath
         , loginModel = Login.init flags.initialSeed baseUrl
-        , receiveAuthModel = ReceiveAuth.init params baseUrl
+        , receiveAuthModel = ReceiveAuth.init params baseUrl flags.startTime
         , flags = flags
         }
 

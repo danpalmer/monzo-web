@@ -31,14 +31,16 @@ type alias Model =
     { receivedDetails : Dict String String
     , authState : AuthState
     , baseUrl : Erl.Url
+    , appStartTime : Int
     }
 
 
-init : Dict String String -> Erl.Url -> Model
-init receivedDetails baseUrl =
+init : Dict String String -> Erl.Url -> Int -> Model
+init receivedDetails baseUrl appStartTime =
     { receivedDetails = receivedDetails
     , authState = AuthLoading
     , baseUrl = baseUrl
+    , appStartTime = appStartTime
     }
 
 

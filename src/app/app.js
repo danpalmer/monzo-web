@@ -8,9 +8,12 @@ var baseUrl = (
     (window.location.port ? ':' + window.location.port : '')
 );
 
+var currentMilliseconds = (new Date()).getTime();
+
 Elm.Main.fullscreen({
     initialPath: window.location.pathname,
-    initialSeed: (new Date()).getTime(),
+    initialSeed: currentMilliseconds,
+    startTime: currentMilliseconds,
     baseUrl: baseUrl,
     query: window.location.search
 });
