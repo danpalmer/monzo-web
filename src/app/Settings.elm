@@ -18,3 +18,7 @@ mondoClientSecret =
 
 mondoOAuthStateKey =
     "mondoOAuthState"
+
+
+authDetailsKey =
+    "authDetails"

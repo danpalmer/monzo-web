@@ -5,7 +5,7 @@ import Html exposing (..)
 import Html.Attributes exposing (style, class, href)
 import Http
 import HttpBuilder
-import Json.Decode
+import Json.Encode as JE
 import Task
 import Routes
 import Api.Mondo as Mondo
@@ -15,7 +15,6 @@ import Dict exposing (Dict)
 import String
 import Settings
 import LocalStorage
-import Debug
 
 
 -- Model
@@ -58,12 +57,13 @@ type Msg
     | ErrorLoadingState LocalStorage.Error
     | ReceiveAuthDetails Mondo.AuthDetails
     | ErrorExchangingAuthDetails (HttpBuilder.Error String)
-    | Done
+    | PersistedAuthDetails ()
+    | ErrorPersistingAuthDetails LocalStorage.Error
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case Debug.log "ReceiveAuth.update" msg of
+    case msg of
         LoadedState state ->
             if (isValidState model state) then
                 ( { model | authState = AuthDone }
@@ -81,7 +81,7 @@ update msg model =
 
         ReceiveAuthDetails authDetails ->
             ( { model | authState = AuthDone }
-            , Cmd.none
+            , setAccessTokenInStorage authDetails model.appStartTime
             )
 
         ErrorExchangingAuthDetails _ ->
@@ -144,3 +144,22 @@ getAuthToken model =
     in
         Mondo.exchangeAuthCode code redirectUrl
             |> Task.perform ErrorExchangingAuthDetails ReceiveAuthDetails
+
+
+setAccessTokenInStorage : Mondo.AuthDetails -> Int -> Cmd Msg
+setAccessTokenInStorage authDetails appStartTime =
+    let
+        expiresAt =
+            appStartTime + (authDetails.expiresIn * 1000)
+
+        jsonAuthDetails =
+            JE.encode 0
+                (JE.object
+                    [ ( "access_token", JE.string authDetails.accessToken )
+                    , ( "expires_at", JE.int expiresAt )
+                    , ( "user_id", JE.string authDetails.userID )
+                    ]
+                )
+    in
+        LocalStorage.set Settings.authDetailsKey jsonAuthDetails
+            |> Task.perform ErrorPersistingAuthDetails PersistedAuthDetails
