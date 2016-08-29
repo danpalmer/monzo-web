@@ -1,6 +1,5 @@
 module Prelude exposing (..)
 
-import Dict exposing (Dict)
 import Task
 import String
 
@@ -31,25 +30,3 @@ firstOccurrence c s =
 
         head :: _ ->
             Just head
-
-
-parseSearchString : String -> Maybe (Dict String String)
-parseSearchString startsWithQuestionMarkThenParams =
-    case (String.uncons startsWithQuestionMarkThenParams) of
-        Just ( '?', rest ) ->
-            Just (parseParams rest)
-
-        otherwise ->
-            Nothing
-
-
-parseParams : String -> Dict String String
-parseParams stringWithAmpersands =
-    let
-        eachParam =
-            (String.split "&" stringWithAmpersands)
-
-        eachPair =
-            List.map (splitAtFirst '=') eachParam
-    in
-        (Dict.fromList eachPair)

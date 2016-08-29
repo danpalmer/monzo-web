@@ -82,7 +82,7 @@ getAuthDetailsFromStorage appStartTime =
 
 expired : AuthDetails -> Int -> Bool
 expired authDetails appStartTime =
-    (authDetails.expiresAt - appStartTime) < 0
+    authDetails.expiresAt < appStartTime
 
 
 localStorageErrorToString : LocalStorage.Error -> String
