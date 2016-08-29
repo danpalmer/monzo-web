@@ -42,15 +42,42 @@ update msg model =
                 ( { model | accountModel = model' }, Cmd.map AccountMsg msg )
 
         ReadPersistedAuth authDetails ->
-            if (Auth.expired authDetails model.flags.startTime) then
-                ( model, Routes.navigate Routes.Login )
-            else
-                ( { model | accountModel = Account.init authDetails }
-                , Routes.navigate Routes.Account
-                )
+            authLoaded authDetails model
 
         FailedToReadPersistedAuth _ ->
             ( model, Routes.navigate Routes.Login )
 
         otherwise ->
             ( model, Cmd.none )
+
+
+authLoaded : Auth.AuthDetails -> Model -> ( Model, Cmd Msg )
+authLoaded authDetails model =
+    let
+        authRequiredRoutes =
+            [ Routes.Account ]
+
+        authRequired =
+            List.member model.currentRoute authRequiredRoutes
+
+        authExpired =
+            Auth.expired authDetails model.flags.startTime
+
+        model' =
+            { model | accountModel = Account.init authDetails }
+
+        atHome =
+            model.currentRoute == Routes.Home
+    in
+        if (authRequired && authExpired) then
+            -- If we don't have the auth we need, redirect to Login
+            ( model', Routes.navigate Routes.Login )
+        else if (atHome && (not authExpired)) then
+            -- If we're on the landing page, and have auth, go to Account
+            ( model', Routes.navigate Routes.Account )
+        else if (atHome && authExpired) then
+            -- If we're on the landing page, and have no auth, go to Login
+            ( model', Routes.navigate Routes.Login )
+        else
+            -- We're on a different route, so just stay there and update the model
+            ( model', Cmd.none )
