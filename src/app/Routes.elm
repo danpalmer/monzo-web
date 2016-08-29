@@ -13,19 +13,20 @@ import String
 
 
 type Route
-    = Login
+    = Home
+    | Login
     | ReceiveAuth
-    | Home
+    | Account
     | NotFound
-    | EmptyRoute
 
 
 routeParser : Parser (Route -> a) a
 routeParser =
     oneOf
-        [ format Login (s "")
+        [ format Home (s "")
+        , format Login (s "login")
         , format ReceiveAuth (s "receive")
-        , format Home (s "account")
+        , format Account (s "account")
         , format NotFound (s "404")
         ]
 
@@ -65,20 +66,35 @@ decodeOr404 location =
 encode : Route -> String
 encode route =
     case route of
-        Login ->
+        Home ->
             "/"
+
+        Login ->
+            "/login"
 
         ReceiveAuth ->
             "/receive"
 
-        Home ->
+        Account ->
             "/account"
 
         NotFound ->
             "/404"
 
-        EmptyRoute ->
-            "/404"
+
+routeOr404 : Result String Route -> Route
+routeOr404 result =
+    case result of
+        Ok route ->
+            route
+
+        Err _ ->
+            NotFound
+
+
+navigate : Route -> Cmd msg
+navigate route =
+    Navigation.newUrl (encode route)
 
 
 

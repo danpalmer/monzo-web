@@ -18,6 +18,10 @@ type alias AuthDetails =
     }
 
 
+emptyAuthDetails =
+    AuthDetails "" 0 ""
+
+
 authDetailsDecoder : JD.Decoder AuthDetails
 authDetailsDecoder =
     JD.object3
@@ -74,6 +78,11 @@ getAuthDetailsFromStorage appStartTime =
 
 
 -- Utils
+
+
+expired : AuthDetails -> Int -> Bool
+expired authDetails appStartTime =
+    (authDetails.expiresAt - appStartTime) < 0
 
 
 localStorageErrorToString : LocalStorage.Error -> String

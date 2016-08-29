@@ -13,6 +13,7 @@ import Erl
 import Prelude exposing (..)
 import Dict exposing (Dict)
 import String
+import Navigation
 import Settings
 import LocalStorage
 import Utils.Auth as Auth
@@ -90,6 +91,9 @@ update msg model =
             ( { model | authState = AuthErrored }
             , Cmd.none
             )
+
+        PersistedApiAuthDetails _ ->
+            ( model, Navigation.newUrl (Routes.encode Routes.Account) )
 
         -- TODO: handle error states here.
         otherwise ->
