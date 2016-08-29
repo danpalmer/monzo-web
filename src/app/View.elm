@@ -9,13 +9,14 @@ import Update exposing (Msg(..))
 import Views.Login as Login
 import Views.ReceiveAuth as ReceiveAuth
 import Views.Account as Account
+import Views.Loading as Loading
 
 
 contentView : Model -> Html Msg
 contentView model =
     case model.currentRoute of
         Routes.Home ->
-            text "home..."
+            Loading.view
 
         Routes.Login ->
             Html.App.map LoginMsg (Login.view model.loginModel)
@@ -32,10 +33,4 @@ contentView model =
 
 view : Model -> Html Msg
 view model =
-    div
-        [ class "container-fluid" ]
-        [ div
-            [ class "content"
-            ]
-            [ contentView model ]
-        ]
+    contentView model

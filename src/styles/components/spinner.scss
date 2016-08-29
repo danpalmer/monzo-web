@@ -1,0 +1,28 @@
+$size: 50px;
+
+@keyframes zoom-in-fade {
+    from 0%, 45% {
+        transform: scale3d(1, 1, 1);
+    }
+
+    50% {
+        transform: scale3d(1.1, 1.1, 1.1);
+    }
+
+    to 55%, 100% {
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+.spinner {
+    width: $size;
+    height: $size;
+    background-image: url(../images/mondo.svg);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    animation-name: zoom-in-fade;
+    animation-timing-function: ease-in-out;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
