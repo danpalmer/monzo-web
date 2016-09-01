@@ -5,7 +5,7 @@ import Random.String exposing (string)
 import Random.Char exposing (english)
 import Platform.Cmd
 import Html exposing (..)
-import Html.Attributes exposing (style, class, href)
+import Html.Attributes exposing (style, class, href, disabled)
 import Http
 import Json.Decode as JD
 import Json.Decode as JD exposing ((:=))
@@ -92,16 +92,45 @@ view : Model -> Html Msg
 view model =
     case model.readyState of
         Preparing ->
-            div [] [ h1 [] [ text "Loading..." ] ]
+            viewContent model False Nothing
 
         Ready ->
-            div
-                [ style [ "width" => "200px" ] ]
-                [ a [ href (Erl.toString model.redirectUrl) ] [ text "Login" ]
-                ]
+            viewContent model True Nothing
 
         Errored ->
-            div [] [ h1 [] [ text "Error" ] ]
+            viewContent model False (Just "Error, please contact support")
+
+
+viewContent : Model -> Bool -> Maybe String -> Html Msg
+viewContent model loginEnabled error =
+    let
+        loginElement =
+            if loginEnabled then
+                a
+            else
+                span
+
+        errorElement =
+            case error of
+                Nothing ->
+                    []
+
+                Just err ->
+                    [ p [ class "error" ] [ text err ] ]
+    in
+        div [ class "view-login" ]
+            [ div [ class "content" ]
+                (List.append
+                    [ loginElement
+                        [ class "login"
+                        , href (Erl.toString model.redirectUrl)
+                        , disabled (not loginEnabled)
+                        ]
+                        [ text "Login with Mondo" ]
+                    ]
+                    errorElement
+                )
+            ]
 
 
 

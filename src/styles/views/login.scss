@@ -1,0 +1,58 @@
+$logo-size: 32px;
+$logo-padding: 16px;
+
+.view-login {
+    @include flexbox-center-content;
+
+    text-align: center;
+
+    $colour: lighten($bgcolour, 50%);
+
+    .login {
+        $height: ($logo-padding * 2) + $logo-size;
+
+        height: $height;
+        display: inline-block;
+
+        color: $colour;
+        font-size: 20px;
+        line-height: $height - 3px;
+
+        border-width: 2px;
+        border-style: solid;
+        border-color: $colour;
+        border-radius: 5px;
+
+        background-image: url(../images/mondo.svg);
+        background-size: $logo-size $logo-size;
+        background-repeat: no-repeat;
+        background-position: $logo-padding;
+
+        padding-left: ($logo-padding * 2) + $logo-size;
+        padding-right: $logo-padding;
+    }
+
+    a.login {
+        &:hover {
+            color: lighten($colour, 20%);
+            text-decoration: none;
+            background-color: lighten($bgcolour, 5%)
+        }
+    }
+
+    span.login {
+        $colour: grayscale(lighten($bgcolour, 50%));
+        color: $colour;
+        border-color: $colour;
+        filter: grayscale(100%);
+        cursor: default;
+    }
+
+    .error {
+        margin: 30px;
+        background-color: $red;
+        padding: 3px 8px;
+        border-radius: 3px;
+        border: 1px solid lighten($red, 2%);
+    }
+}
