@@ -1,11 +1,13 @@
 $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
-@import '~bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+@import '~bootstrap-sass/assets/stylesheets/bootstrap';
+
+@import 'variables';
 
 @import 'views/loading';
+@import 'views/not-found';
 
 @import 'components/spinner';
 
-$bgcolour: #16243b;
 
 body {
     background-color: $bgcolour;

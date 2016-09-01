@@ -10,6 +10,7 @@ import Views.Login as Login
 import Views.ReceiveAuth as ReceiveAuth
 import Views.Account as Account
 import Views.Loading as Loading
+import Views.NotFound as NotFound
 
 
 contentView : Model -> Html Msg
@@ -28,7 +29,7 @@ contentView model =
             Html.App.map AccountMsg (Account.view model.accountModel)
 
         Routes.NotFound ->
-            text "Not Found"
+            NotFound.view
 
 
 view : Model -> Html Msg
