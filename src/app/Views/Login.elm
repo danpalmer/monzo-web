@@ -13,7 +13,7 @@ import Task
 import Settings
 import Routes
 import Navigation
-import Api.Mondo as Mondo
+import Api.Monzo as Monzo
 import Erl
 import Prelude exposing (..)
 import LocalStorage
@@ -71,7 +71,7 @@ update msg model =
                     Erl.appendPathSegments [ "receive" ] model.baseUrl
 
                 url =
-                    Mondo.loginUrl state returnUrl
+                    Monzo.loginUrl state returnUrl
             in
                 ( { model | redirectUrl = url }
                 , setStateInStorage state
@@ -126,7 +126,7 @@ viewContent model loginEnabled error =
                         , href (Erl.toString model.redirectUrl)
                         , disabled (not loginEnabled)
                         ]
-                        [ text "Login with Mondo" ]
+                        [ text "Login with Monzo" ]
                     ]
                     errorElement
                 )
@@ -139,5 +139,5 @@ viewContent model loginEnabled error =
 
 setStateInStorage : String -> Cmd Msg
 setStateInStorage state =
-    LocalStorage.set Settings.mondoOAuthStateKey state
+    LocalStorage.set Settings.monzoOAuthStateKey state
         |> Task.perform FailedToStoreState StoredState

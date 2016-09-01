@@ -1,10 +1,10 @@
 {
-  "name": "mondo-web",
+  "name": "monzo-web",
   "version": "0.0.1",
   "license": "MIT",
   "author": "Dan Palmer",
-  "description": "A web interface for Mondo banking.",
-  "repository": "https://github.com/danpalmer/mondo-web",
+  "description": "A web interface for Monzo banking.",
+  "repository": "https://github.com/danpalmer/monzo-web",
   "scripts": {
     "start": "webpack-dev-server",
     "build": "webpack",

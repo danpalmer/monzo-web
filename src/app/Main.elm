@@ -6,7 +6,7 @@ import Navigation
 import Dict exposing (Dict)
 import Erl
 import Routes
-import Api.Mondo as Mondo
+import Api.Monzo as Monzo
 import View exposing (view)
 import Update exposing (Msg(..), update)
 import Model exposing (Model, Flags, initialModel)

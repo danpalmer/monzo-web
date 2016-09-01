@@ -8,7 +8,7 @@ import HttpBuilder
 import Json.Encode as JE
 import Task
 import Routes
-import Api.Mondo as Mondo
+import Api.Monzo as Monzo
 import Erl
 import Prelude exposing (..)
 import Dict exposing (Dict)
@@ -57,7 +57,7 @@ mountedRoute model =
 type Msg
     = LoadedState String
     | ErrorLoadingState LocalStorage.Error
-    | ReceiveApiAuthDetails Mondo.ApiAuthDetails
+    | ReceiveApiAuthDetails Monzo.ApiAuthDetails
     | ErrorExchangingApiAuthDetails (HttpBuilder.Error String)
     | PersistedApiAuthDetails ()
     | ErrorPersistingApiAuthDetails LocalStorage.Error
@@ -141,7 +141,7 @@ setAuthDetailsInStorage authDetails =
 
 getStateFromStorage : Cmd Msg
 getStateFromStorage =
-    LocalStorage.get Settings.mondoOAuthStateKey
+    LocalStorage.get Settings.monzoOAuthStateKey
         |> Task.perform ErrorLoadingState LoadedState
 
 
@@ -154,5 +154,5 @@ getAuthToken model =
         code =
             Maybe.withDefault "" (Dict.get "code" model.receivedDetails)
     in
-        Mondo.exchangeAuthCode code redirectUrl
+        Monzo.exchangeAuthCode code redirectUrl
             |> Task.perform ErrorExchangingApiAuthDetails ReceiveApiAuthDetails

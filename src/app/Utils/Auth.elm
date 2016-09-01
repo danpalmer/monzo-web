@@ -8,7 +8,7 @@ import Result
 import LocalStorage
 import Prelude exposing (andThen)
 import Settings
-import Api.Mondo as Mondo
+import Api.Monzo as Monzo
 
 
 type alias AuthDetails =
@@ -52,7 +52,7 @@ encodeAuthDetails authDetails =
         )
 
 
-apiAuthDetailsToAuthDetails : Mondo.ApiAuthDetails -> Int -> AuthDetails
+apiAuthDetailsToAuthDetails : Monzo.ApiAuthDetails -> Int -> AuthDetails
 apiAuthDetailsToAuthDetails apiAuthDetails appStartTime =
     AuthDetails
         apiAuthDetails.accessToken

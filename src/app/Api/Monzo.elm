@@ -1,4 +1,4 @@
-module Api.Mondo exposing (..)
+module Api.Monzo exposing (..)
 
 import Erl
 import Dict
@@ -21,12 +21,12 @@ loginUrl : String -> Erl.Url -> Erl.Url
 loginUrl state redirectUrl =
     let
         url =
-            Erl.parse "https://auth.getmondo.co.uk/"
+            Erl.parse "https://auth.getmonzo.co.uk/"
     in
         { url
             | query =
                 Dict.fromList
-                    [ "client_id" => Settings.mondoClientID
+                    [ "client_id" => Settings.monzoClientID
                     , "redirect_uri" => Erl.toString redirectUrl
                     , "response_type" => "code"
                     , "state" => state
@@ -50,13 +50,13 @@ exchangeAuthCode code redirectUrl =
     let
         data =
             [ "grant_type" => "authorization_code"
-            , "client_id" => Settings.mondoClientID
-            , "client_secret" => Settings.mondoClientSecret
+            , "client_id" => Settings.monzoClientID
+            , "client_secret" => Settings.monzoClientSecret
             , "redirect_uri" => Erl.toString redirectUrl
             , "code" => code
             ]
     in
-        post "https://api.getmondo.co.uk/oauth2/token"
+        post "https://api.getmonzo.co.uk/oauth2/token"
             |> withUrlEncodedBody data
             |> withHeader "Content-type" "application/x-www-form-urlencoded"
             |> send (jsonReader decodeApiAuthDetails) stringReader
