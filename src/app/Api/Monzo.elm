@@ -31,7 +31,7 @@ loginUrl state redirectUrl =
         }
 
 
-exchangeAuthCode : String -> Erl.Url -> Task (Error String) ApiAuthDetails
+exchangeAuthCode : String -> Erl.Url -> Task ApiError ApiAuthDetails
 exchangeAuthCode code redirectUrl =
     let
         data =
@@ -47,14 +47,15 @@ exchangeAuthCode code redirectUrl =
             |> withHeader "Content-type" "application/x-www-form-urlencoded"
             |> send (jsonReader decodeApiAuthDetails) stringReader
             |> Task.map (\response -> response.data)
+            |> Task.mapError httpErrorToApiError
 
 
-getAccounts : AuthDetails -> Task (Error String) (List Account)
+getAccounts : AuthDetails -> Task ApiError (List Account)
 getAccounts authDetails =
     monzoGet "https://api.getmondo.co.uk/accounts" authDetails decodeAccountList []
 
 
-getBalance : AuthDetails -> Account -> Task (Error String) Balance
+getBalance : AuthDetails -> Account -> Task ApiError Balance
 getBalance authDetails account =
     monzoGet "https://api.getmondo.co.uk/accounts"
         authDetails
@@ -63,12 +64,12 @@ getBalance authDetails account =
         ]
 
 
-getRecentTransactions : AuthDetails -> Account -> Task (Error String) (List Transaction)
+getRecentTransactions : AuthDetails -> Account -> Task ApiError (List Transaction)
 getRecentTransactions authDetails account =
     getTransactions authDetails account Nothing Nothing
 
 
-getTransactions : AuthDetails -> Account -> Maybe Date -> Maybe Date -> Task (Error String) (List Transaction)
+getTransactions : AuthDetails -> Account -> Maybe Date -> Maybe Date -> Task ApiError (List Transaction)
 getTransactions authDetails account before since =
     let
         beforeParam =
@@ -99,9 +100,32 @@ getTransactions authDetails account before since =
 -- Utils
 
 
-monzoGet : String -> AuthDetails -> Decoder a -> List ( String, String ) -> Task (Error String) a
+type ApiError
+    = NetworkError
+    | ClientError
+    | ServerError
+
+
+httpErrorToApiError : Error String -> ApiError
+httpErrorToApiError err =
+    case err of
+        H.UnexpectedPayload _ ->
+            ServerError
+
+        H.NetworkError ->
+            NetworkError
+
+        H.Timeout ->
+            NetworkError
+
+        H.BadResponse _ ->
+            ClientError
+
+
+monzoGet : String -> AuthDetails -> Decoder a -> List ( String, String ) -> Task ApiError a
 monzoGet url authDetails decoder query =
     get (H.url url query)
         |> withHeader "Authorization" ("Bearer " ++ authDetails.accessToken)
         |> send (jsonReader decoder) stringReader
         |> Task.map (\response -> response.data)
+        |> Task.mapError httpErrorToApiError

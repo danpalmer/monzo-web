@@ -1,7 +1,6 @@
 module Views.ReceiveAuth exposing (Model, init, Msg, update, view, mountedRoute)
 
 import Html exposing (..)
-import HttpBuilder
 import Task
 import Routes
 import Api.Monzo as Monzo
@@ -53,7 +52,7 @@ type Msg
     = LoadedState String
     | ErrorLoadingState LocalStorage.Error
     | ReceiveApiAuthDetails ApiAuthDetails
-    | ErrorExchangingApiAuthDetails (HttpBuilder.Error String)
+    | ErrorExchangingApiAuthDetails Monzo.ApiError
     | PersistedApiAuthDetails ()
     | ErrorPersistingApiAuthDetails LocalStorage.Error
 
