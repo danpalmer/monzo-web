@@ -126,3 +126,41 @@ decodeMerchant =
         ("emoji" := string)
         ("name" := string)
         ("category" := decodeTransactionCategory)
+
+
+decodeDeclineReason : Decoder DeclineReason
+decodeDeclineReason =
+    customDecoder string
+        (\declineReason ->
+            case declineReason of
+                "INSUFFICIENT_FUNDS" ->
+                    Result.Ok InsufficientFunds
+
+                "CARD_INACTIVE" ->
+                    Result.Ok CardInactive
+
+                "CARD_BLOCKED" ->
+                    Result.Ok CardBlocked
+
+                "OTHER" ->
+                    Result.Ok OtherReason
+
+                otherwise ->
+                    Result.Err "Unsupported decline reason"
+        )
+
+
+decodeTransaction : Decoder Transaction
+decodeTransaction =
+    succeed Transaction
+        |: ("account_balance" := int)
+        |: ("amount" := int)
+        |: ("created" := date)
+        |: ("currency" := decodeCurrency)
+        |: ("description" := string)
+        |: ("id" := string)
+        |: ("merchant" := decodeMerchant)
+        |: ("notes" := string)
+        |: ("is_load" := bool)
+        |: ("settled" := date)
+        |: ("decline_reason" := maybe decodeDeclineReason)

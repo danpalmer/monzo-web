@@ -69,3 +69,25 @@ type alias Merchant =
     , name : String
     , category : TransactionCategory
     }
+
+
+type DeclineReason
+    = InsufficientFunds
+    | CardInactive
+    | CardBlocked
+    | OtherReason
+
+
+type alias Transaction =
+    { accountBalance : Int
+    , amount : Int
+    , created : Date
+    , currency : Currency
+    , description : String
+    , id : String
+    , merchant : Merchant
+    , notes : String
+    , isLoad : Bool
+    , settled : Date
+    , declineReason : Maybe DeclineReason
+    }
