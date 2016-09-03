@@ -9,6 +9,7 @@ import LocalStorage
 import Prelude exposing (andThen)
 import Settings
 import Api.Monzo as Monzo
+import Api.Monzo.Models exposing (ApiAuthDetails)
 
 
 type alias AuthDetails =
@@ -52,7 +53,7 @@ encodeAuthDetails authDetails =
         )
 
 
-apiAuthDetailsToAuthDetails : Monzo.ApiAuthDetails -> Int -> AuthDetails
+apiAuthDetailsToAuthDetails : ApiAuthDetails -> Int -> AuthDetails
 apiAuthDetailsToAuthDetails apiAuthDetails appStartTime =
     AuthDetails
         apiAuthDetails.accessToken

@@ -9,6 +9,7 @@ import Json.Encode as JE
 import Task
 import Routes
 import Api.Monzo as Monzo
+import Api.Monzo.Models exposing (ApiAuthDetails)
 import Erl
 import Prelude exposing (..)
 import Dict exposing (Dict)
@@ -57,7 +58,7 @@ mountedRoute model =
 type Msg
     = LoadedState String
     | ErrorLoadingState LocalStorage.Error
-    | ReceiveApiAuthDetails Monzo.ApiAuthDetails
+    | ReceiveApiAuthDetails ApiAuthDetails
     | ErrorExchangingApiAuthDetails (HttpBuilder.Error String)
     | PersistedApiAuthDetails ()
     | ErrorPersistingApiAuthDetails LocalStorage.Error

@@ -1,20 +1,14 @@
 module Api.Monzo exposing (..)
 
-import Erl
-import Dict
 import Http
-import HttpBuilder exposing (..)
-import String exposing (..)
+import Dict
 import Task exposing (..)
-import Platform.Cmd exposing (Cmd)
+import Erl
+import HttpBuilder exposing (..)
 import Settings
 import Prelude exposing (..)
-import LocalStorage
-import Json.Encode as JE
-import Json.Decode as JD exposing ((:=))
-
-
--- Login
+import Api.Monzo.Models exposing (ApiAuthDetails)
+import Api.Monzo.Decoder exposing (decodeApiAuthDetails)
 
 
 loginUrl : String -> Erl.Url -> Erl.Url
@@ -34,17 +28,6 @@ loginUrl state redirectUrl =
         }
 
 
-
--- Access Token
-
-
-type alias ApiAuthDetails =
-    { accessToken : String
-    , expiresIn : Int
-    , userID : String
-    }
-
-
 exchangeAuthCode : String -> Erl.Url -> Task (Error String) ApiAuthDetails
 exchangeAuthCode code redirectUrl =
     let
@@ -61,12 +44,3 @@ exchangeAuthCode code redirectUrl =
             |> withHeader "Content-type" "application/x-www-form-urlencoded"
             |> send (jsonReader decodeApiAuthDetails) stringReader
             |> Task.map (\response -> response.data)
-
-
-decodeApiAuthDetails : JD.Decoder ApiAuthDetails
-decodeApiAuthDetails =
-    JD.object3
-        ApiAuthDetails
-        ("access_token" := JD.string)
-        ("expires_in" := JD.int)
-        ("user_id" := JD.string)
