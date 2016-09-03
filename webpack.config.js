@@ -86,6 +86,11 @@ if (TARGET_ENV === 'prod') {
                 compressor: {warnings: false},
                 mangle: true
             })
-        ]
+        ],
+
+        output: {
+            path: './dist',
+            filename: 'app.js'
+        }
     });
 }
