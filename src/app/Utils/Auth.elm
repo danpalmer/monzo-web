@@ -18,6 +18,7 @@ type alias AuthDetails =
     }
 
 
+emptyAuthDetails : AuthDetails
 emptyAuthDetails =
     AuthDetails "" 0 ""
 
