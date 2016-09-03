@@ -9,3 +9,11 @@ The application is written in Elm and Sass, and is an attempt for me to learn:
  - A modern and opinionated form of Sass (no `col-xs-12` for me please)
  - Webpack
  - More 'modern' web APIs like push-state, history, etc.
+
+#### Project Setup
+
+This project requires that you have Elm 0.17 installed, and a recent Node environment set up (tested on v6.5.0).
+
+ - To install dependencies, run `npm run install-all`
+ - To run for development, `npm start`
+ - To build for production, `npm run build`
