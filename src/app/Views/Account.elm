@@ -7,8 +7,10 @@ module Views.Account
         , view
         , update
         , mountedRoute
+        , Msg(..)
         )
 
+import Task
 import Platform.Cmd
 import Html exposing (..)
 import Utils.Auth as Auth
@@ -44,7 +46,10 @@ init authDetails =
 
 mountedRoute : Model -> ( Model, Cmd Msg )
 mountedRoute model =
-    ( model, Cmd.none )
+    if (Auth.isEmpty model.authDetails) then
+        ( model, Cmd.none )
+    else
+        ( model, getAccounts model.authDetails )
 
 
 
@@ -52,12 +57,46 @@ mountedRoute model =
 
 
 type Msg
-    = None
+    = AuthLoaded
+    | ReceiveAccounts (List Account)
+    | ReceiveBalance Account Balance
+    | Error Monzo.ApiError
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        AuthLoaded ->
+            ( model, getAccounts model.authDetails )
+
+        ReceiveAccounts accounts ->
+            ( { model | error = Nothing }, Cmd.none )
+
+        ReceiveBalance account balance ->
+            ( { model
+                | accounts = sortAccounts (( account, balance ) :: model.accounts)
+                , error = Nothing
+              }
+            , Cmd.none
+            )
+
+        Error error ->
+            ( { model | error = Just error }, Cmd.none )
+
+
+sortAccounts : List ( Account, Balance ) -> List ( Account, Balance )
+sortAccounts =
+    identity
+
+
+
+-- Actions
+
+
+getAccounts : Auth.AuthDetails -> Cmd Msg
+getAccounts authDetails =
+    Monzo.getAccounts authDetails
+        |> Task.perform Error ReceiveAccounts
 
 
 
