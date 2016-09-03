@@ -32,8 +32,7 @@ var commonConfig = {
         new ExtractTextPlugin('styles.css', {allChunks: true}),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: './src/index.html',
-            hash: true
+            template: './src/index.html'
         })
     ],
 
