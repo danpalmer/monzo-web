@@ -56,7 +56,7 @@ exchangeAuthCode code redirectUrl =
             , "code" => code
             ]
     in
-        post "https://api.getmonzo.co.uk/oauth2/token"
+        post "https://api.getmondo.co.uk/oauth2/token"
             |> withUrlEncodedBody data
             |> withHeader "Content-type" "application/x-www-form-urlencoded"
             |> send (jsonReader decodeApiAuthDetails) stringReader
