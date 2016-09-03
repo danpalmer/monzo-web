@@ -117,7 +117,7 @@ if (TARGET_ENV === 'prod') {
             new ExtractTextPlugin('styles-[contenthash].css'),
             new FaviconsWebpackPlugin({
                 logo: './src/images/monzo.svg',
-                prefix: 'icons/',
+                prefix: 'icons-[hash]/',
                 background: '#16243b',
                 title: 'Monzo Web',
                 icons: {
