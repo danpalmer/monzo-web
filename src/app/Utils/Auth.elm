@@ -23,6 +23,11 @@ emptyAuthDetails =
     AuthDetails "" 0 ""
 
 
+isEmpty : AuthDetails -> Bool
+isEmpty authDetails =
+    authDetails.expiresAt == 0
+
+
 authDetailsDecoder : JD.Decoder AuthDetails
 authDetailsDecoder =
     JD.object3
