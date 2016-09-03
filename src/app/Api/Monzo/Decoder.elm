@@ -164,3 +164,13 @@ decodeTransaction =
         |: ("is_load" := bool)
         |: ("settled" := date)
         |: ("decline_reason" := maybe decodeDeclineReason)
+
+
+decodeAccountList : Decoder (List Account)
+decodeAccountList =
+    list decodeAccount
+
+
+decodeTransactionList : Decoder (List Transaction)
+decodeTransactionList =
+    list decodeTransaction
