@@ -95,6 +95,10 @@ getTransactions authDetails account before since =
             ]
 
 
+
+-- Utils
+
+
 monzoGet : String -> AuthDetails -> Decoder a -> List ( String, String ) -> Task (Error String) a
 monzoGet url authDetails decoder query =
     get (H.url url query)
