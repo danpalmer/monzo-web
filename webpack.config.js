@@ -54,6 +54,7 @@ if (TARGET_ENV === 'dev') {
             historyApiFallback: true,
             colors: true,
             noInfo: true,
+            progress: true,
             watchOptions: {
                 aggregateTimeout: 300,
                 poll: 1000
