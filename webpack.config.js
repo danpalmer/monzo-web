@@ -58,26 +58,22 @@ var commonConfig = {
     postcss: [
         autoprefixer({browsers: ['last 2 versions']})
     ],
-
-    devServer: {
-        historyApiFallback: true,
-        colors: true,
-        noInfo: true,
-        watchOptions: {
-            aggregateTimeout: 300,
-            poll: 1000
-        },
-        stats: {
-            colors: true
-        }
-    }
 };
 
 if (TARGET_ENV === 'dev') {
     module.exports = merge(commonConfig, {
         devServer: {
             inline: true,
-            stats: 'errors-only'
+            historyApiFallback: true,
+            colors: true,
+            noInfo: true,
+            watchOptions: {
+                aggregateTimeout: 300,
+                poll: 1000
+            },
+            stats: {
+                colors: true
+            }
         },
     });
 }
