@@ -110,6 +110,9 @@ if (TARGET_ENV === 'prod') {
                     windows: false
                 }
             }),
+            new ProgressBarPlugin({
+                renderThrottle: 500
+            })
         ],
 
         output: {
