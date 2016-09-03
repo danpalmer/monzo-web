@@ -4,10 +4,12 @@ import Task
 import String
 
 
+(=>) : a -> b -> ( a, b )
 (=>) =
     (,)
 
 
+andThen : (a -> Task.Task b c) -> Task.Task b a -> Task.Task b c
 andThen =
     flip Task.andThen
 
