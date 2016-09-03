@@ -1,19 +1,13 @@
 module Views.ReceiveAuth exposing (Model, init, Msg, update, view, mountedRoute)
 
-import Random exposing (initialSeed, Seed)
 import Html exposing (..)
-import Html.Attributes exposing (style, class, href)
-import Http
 import HttpBuilder
-import Json.Encode as JE
 import Task
 import Routes
 import Api.Monzo as Monzo
 import Api.Monzo.Models exposing (ApiAuthDetails)
 import Erl
-import Prelude exposing (..)
 import Dict exposing (Dict)
-import String
 import Navigation
 import Settings
 import LocalStorage

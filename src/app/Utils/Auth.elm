@@ -8,7 +8,6 @@ import Result
 import LocalStorage
 import Prelude exposing (andThen)
 import Settings
-import Api.Monzo as Monzo
 import Api.Monzo.Models exposing (ApiAuthDetails)
 
 

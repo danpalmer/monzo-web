@@ -11,9 +11,7 @@ module Views.Account
 
 import Platform.Cmd
 import Html exposing (..)
-import Html.Attributes exposing (style, class, href)
 import Utils.Auth as Auth
-import Debug
 
 
 -- Model

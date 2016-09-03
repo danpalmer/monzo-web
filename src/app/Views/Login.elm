@@ -6,19 +6,11 @@ import Random.Char exposing (english)
 import Platform.Cmd
 import Html exposing (..)
 import Html.Attributes exposing (style, class, href, disabled)
-import Http
-import Json.Decode as JD
-import Json.Decode as JD exposing ((:=))
 import Task
 import Settings
-import Routes
-import Navigation
 import Api.Monzo as Monzo
 import Erl
-import Prelude exposing (..)
 import LocalStorage
-import Utils.Auth as Auth
-import Debug
 
 
 -- Model

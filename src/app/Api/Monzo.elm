@@ -1,6 +1,5 @@
 module Api.Monzo exposing (..)
 
-import Http
 import Dict
 import Task exposing (..)
 import Erl
