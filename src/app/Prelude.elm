@@ -14,6 +14,12 @@ andThen =
     flip Task.andThen
 
 
+sendMsg : a -> Cmd a
+sendMsg msg =
+    Task.succeed True
+        |> Task.perform (always msg) (always msg)
+
+
 splitAtFirst : Char -> String -> ( String, String )
 splitAtFirst c s =
     case (firstOccurrence c s) of
