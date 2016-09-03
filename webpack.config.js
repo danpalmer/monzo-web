@@ -4,6 +4,7 @@ var writefile = require('writefile');
 var autoprefixer = require('autoprefixer');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var ProgressBarPlugin = require('progress-bar-webpack-plugin');
 var FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 var TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? 'prod' : 'dev';
