@@ -90,6 +90,7 @@ if (TARGET_ENV === 'prod') {
                 compressor: {warnings: false},
                 mangle: true
             }),
+            new webpack.optimize.OccurenceOrderPlugin(),
             new ExtractTextPlugin('styles-[contenthash].css')
         ],
 
