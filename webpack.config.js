@@ -29,7 +29,6 @@ var commonConfig = {
     },
 
     plugins: [
-        new ExtractTextPlugin('styles.css', {allChunks: true}),
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: './src/index.html'
@@ -90,12 +89,15 @@ if (TARGET_ENV === 'prod') {
                 minimize: true,
                 compressor: {warnings: false},
                 mangle: true
-            })
+            }),
+            new ExtractTextPlugin('styles-[contenthash].css')
         ],
 
         output: {
             path: './dist',
-            filename: 'app.js'
+            filename: 'app-[hash].js'
+        },
+
         module: {
             loaders: [
                 {
