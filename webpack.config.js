@@ -83,6 +83,7 @@ if (TARGET_ENV === 'dev') {
                 colors: true
             }
         },
+
         module: {
             loaders: [
                 {
