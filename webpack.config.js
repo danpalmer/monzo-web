@@ -11,11 +11,6 @@ var commonConfig = {
 
     entry: './src/app/app.js',
 
-    output: {
-        path: './build',
-        filename: 'app.js'
-    },
-
     resolve: {
         modulesDirectories: ['node_modules'],
         extensions:         ['', '.js', '.elm']
@@ -62,6 +57,11 @@ var commonConfig = {
 
 if (TARGET_ENV === 'dev') {
     module.exports = merge(commonConfig, {
+        output: {
+            path: './build',
+            filename: 'app.js'
+        },
+
         devServer: {
             inline: true,
             historyApiFallback: true,
