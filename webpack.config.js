@@ -4,6 +4,7 @@ var writefile = require('writefile');
 var autoprefixer = require('autoprefixer');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 var TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? 'prod' : 'dev';
 
@@ -91,7 +92,24 @@ if (TARGET_ENV === 'prod') {
                 mangle: true
             }),
             new webpack.optimize.OccurenceOrderPlugin(),
-            new ExtractTextPlugin('styles-[contenthash].css')
+            new ExtractTextPlugin('styles-[contenthash].css'),
+            new FaviconsWebpackPlugin({
+                logo: './src/images/monzo.svg',
+                prefix: 'icons/',
+                background: '#16243b',
+                title: 'Monzo Web',
+                icons: {
+                    android: false,
+                    appleIcon: true,
+                    appleStartup: false,
+                    favicons: true,
+                    firefox: true,
+                    opengraph: true,
+                    twitter: true,
+                    yandex: false,
+                    windows: false
+                }
+            }),
         ],
 
         output: {
