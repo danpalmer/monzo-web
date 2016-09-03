@@ -168,9 +168,9 @@ decodeTransaction =
 
 decodeAccountList : Decoder (List Account)
 decodeAccountList =
-    list decodeAccount
+    ("accounts" := (list decodeAccount))
 
 
 decodeTransactionList : Decoder (List Transaction)
 decodeTransactionList =
-    list decodeTransaction
+    ("transactions" := (list decodeTransaction))
