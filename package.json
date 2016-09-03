@@ -7,7 +7,7 @@
   "repository": "https://github.com/danpalmer/monzo-web",
   "scripts": {
     "start": "webpack-dev-server",
-    "build": "webpack build",
+    "build": "webpack --display-error-details",
     "install-all": "npm install; elm package install --yes"
   },
   "devDependencies": {
