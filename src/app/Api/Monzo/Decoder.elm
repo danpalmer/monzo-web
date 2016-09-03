@@ -1,14 +1,128 @@
 module Api.Monzo.Decoder exposing (..)
 
+import Result
+import Erl exposing (Url)
 import Api.Monzo.Models exposing (..)
-import Json.Encode as JE
-import Json.Decode as JD exposing ((:=))
+import Json.Decode exposing (..)
+import Json.Decode.Extra exposing (..)
 
 
-decodeApiAuthDetails : JD.Decoder ApiAuthDetails
+decodeApiAuthDetails : Decoder ApiAuthDetails
 decodeApiAuthDetails =
-    JD.object3
+    object3
         ApiAuthDetails
-        ("access_token" := JD.string)
-        ("expires_in" := JD.int)
-        ("user_id" := JD.string)
+        ("access_token" := string)
+        ("expires_in" := int)
+        ("user_id" := string)
+
+
+decodeAccount : Decoder Account
+decodeAccount =
+    object3
+        Account
+        ("id" := string)
+        ("description" := string)
+        ("created" := date)
+
+
+decodeCurrency : Decoder Currency
+decodeCurrency =
+    customDecoder string
+        (\currencyValue ->
+            case currencyValue of
+                "GBP" ->
+                    Result.Ok GBP
+
+                "USD" ->
+                    Result.Ok USD
+
+                "EUR" ->
+                    Result.Ok EUR
+
+                otherwise ->
+                    Result.Err "Unsupported currency"
+        )
+
+
+decodeBalance : Decoder Balance
+decodeBalance =
+    object3
+        Balance
+        ("balance" := int)
+        ("currency" := decodeCurrency)
+        ("spend_today" := int)
+
+
+decodeAddress : Decoder Address
+decodeAddress =
+    object7
+        Address
+        ("address" := string)
+        ("city" := string)
+        ("country" := string)
+        ("latitude" := float)
+        ("longitude" := float)
+        ("postcode" := string)
+        ("region" := string)
+
+
+decodeTransactionCategory : Decoder TransactionCategory
+decodeTransactionCategory =
+    customDecoder string
+        (\categoryValue ->
+            case categoryValue of
+                "general" ->
+                    Result.Ok General
+
+                "eating_out" ->
+                    Result.Ok EatingOut
+
+                "expenses" ->
+                    Result.Ok Expenses
+
+                "transport" ->
+                    Result.Ok Transport
+
+                "cash" ->
+                    Result.Ok Cash
+
+                "bills" ->
+                    Result.Ok Bills
+
+                "entertainment" ->
+                    Result.Ok Entertainment
+
+                "shopping" ->
+                    Result.Ok Shopping
+
+                "holidays" ->
+                    Result.Ok Holidays
+
+                "groceries" ->
+                    Result.Ok Groceries
+
+                otherwise ->
+                    Result.Err "Unsupported transaction category"
+        )
+
+
+decodeUrl : Decoder Url
+decodeUrl =
+    customDecoder string
+        (\urlString ->
+            Result.Ok (Erl.parse urlString)
+        )
+
+
+decodeMerchant : Decoder Merchant
+decodeMerchant =
+    object8
+        Merchant
+        ("address" := decodeAddress)
+        ("created" := date)
+        ("group" := string)
+        ("id" := string)
+        ("logo" := decodeUrl)
+        ("emoji" := string)
+        ("name" := string)
+        ("category" := decodeTransactionCategory)
