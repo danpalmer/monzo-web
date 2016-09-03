@@ -12,6 +12,8 @@ module Views.Account
 import Platform.Cmd
 import Html exposing (..)
 import Utils.Auth as Auth
+import Api.Monzo as Monzo
+import Api.Monzo.Models exposing (Account, Balance)
 
 
 -- Model
@@ -19,18 +21,24 @@ import Utils.Auth as Auth
 
 type alias Model =
     { authDetails : Auth.AuthDetails
+    , accounts : List ( Account, Balance )
+    , error : Maybe Monzo.ApiError
     }
 
 
 empty : Model
 empty =
     { authDetails = Auth.emptyAuthDetails
+    , accounts = []
+    , error = Nothing
     }
 
 
 init : Auth.AuthDetails -> Model
 init authDetails =
     { authDetails = authDetails
+    , accounts = []
+    , error = Nothing
     }
 
 
