@@ -21,7 +21,7 @@ loginUrl : String -> Erl.Url -> Erl.Url
 loginUrl state redirectUrl =
     let
         url =
-            Erl.parse "https://auth.getmonzo.co.uk/"
+            Erl.parse "https://auth.getmondo.co.uk/"
     in
         { url
             | query =
