@@ -12,6 +12,7 @@ import Views.Account as Account
 import Utils.Auth as Auth
 
 
+main : Program Flags
 main =
     Navigation.programWithFlags (Navigation.makeParser Routes.decode)
         { init = init
