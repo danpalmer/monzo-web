@@ -20,6 +20,11 @@ sendMsg msg =
         |> Task.perform (always msg) (always msg)
 
 
+join3 : List a -> List a -> List a -> List a
+join3 xs ys zs =
+    List.append ys zs |> List.append xs
+
+
 splitAtFirst : Char -> String -> ( String, String )
 splitAtFirst c s =
     case (firstOccurrence c s) of
