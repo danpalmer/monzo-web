@@ -57,7 +57,7 @@ getAccounts authDetails =
 
 getBalance : AuthDetails -> Account -> Task ApiError Balance
 getBalance authDetails account =
-    monzoGet "https://api.getmondo.co.uk/accounts"
+    monzoGet "https://api.getmondo.co.uk/balance"
         authDetails
         decodeBalance
         [ "account_id" => account.id
