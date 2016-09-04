@@ -1,6 +1,7 @@
 module Update exposing (Msg(..), update)
 
 import Routes
+import Prelude exposing (..)
 import Model exposing (Model)
 import Views.Login as Login
 import Views.ReceiveAuth as ReceiveAuth
@@ -74,10 +75,13 @@ authLoaded authDetails model =
             ( model', Routes.navigate Routes.Login )
         else if (atHome && (not authExpired)) then
             -- If we're on the landing page, and have auth, go to Account
-            ( model', Routes.navigate Routes.Account )
+            model'
+                ! [ Routes.navigate Routes.Account
+                  , sendMsg (AccountMsg Account.AuthLoaded)
+                  ]
         else if (atHome && authExpired) then
             -- If we're on the landing page, and have no auth, go to Login
             ( model', Routes.navigate Routes.Login )
         else
             -- We're on a different route, so just stay there and update the model
-            ( model', Cmd.none )
+            ( model', sendMsg (AccountMsg Account.AuthLoaded) )
