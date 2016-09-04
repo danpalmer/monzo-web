@@ -70,7 +70,8 @@ update msg model =
             ( model, getAccounts model.authDetails )
 
         ReceiveAccounts accounts ->
-            ( { model | error = Nothing }, Cmd.none )
+            { model | error = Nothing }
+                ! (getBalances model.authDetails accounts)
 
         ReceiveBalance account balance ->
             ( { model
@@ -97,6 +98,17 @@ getAccounts : Auth.AuthDetails -> Cmd Msg
 getAccounts authDetails =
     Monzo.getAccounts authDetails
         |> Task.perform Error ReceiveAccounts
+
+
+getBalances : Auth.AuthDetails -> List Account -> List (Cmd Msg)
+getBalances authDetails accounts =
+    (List.map (getBalance authDetails) accounts)
+
+
+getBalance : Auth.AuthDetails -> Account -> Cmd Msg
+getBalance authDetails account =
+    Monzo.getBalance authDetails account
+        |> Task.perform Error (ReceiveBalance account)
 
 
 
