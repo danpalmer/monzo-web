@@ -113,9 +113,9 @@ if (TARGET_ENV === 'dev') {
                     exclude: [/elm-stuff/, /node_modules/],
                     loaders: [
                         'style-loader',
-                        'css-loader',
-                        'postcss-loader',
-                        'sass-loader'
+                        'css-loader?sourceMap',
+                        'postcss-loader?sourceMap',
+                        'sass-loader?sourceMap&sourceComments'
                     ]
                 }
             ]
