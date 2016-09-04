@@ -18,6 +18,7 @@ import Utils.Auth as Auth
 import Api.Monzo as Monzo
 import Api.Monzo.Models exposing (Account, Balance)
 import Components.Balance as BalanceComponent
+import Prelude exposing (join3)
 
 
 -- Model
@@ -121,13 +122,19 @@ view : Model -> Html Msg
 view model =
     div [ class "view-account" ]
         [ div [ class "balances" ]
-            (List.append
+            (join3
+                [ viewHeader model ]
                 (viewBalances model)
                 [ (viewLogout model)
                 ]
             )
         , div [ class "transactions" ] []
         ]
+
+
+viewHeader : Model -> Html Msg
+viewHeader model =
+    div [ class "header" ] []
 
 
 viewBalances : Model -> List (Html Msg)

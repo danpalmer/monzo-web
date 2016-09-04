@@ -9,6 +9,15 @@
         flex-direction: column;
         flex-basis: 150px;
 
+        .header {
+            width: 100%;
+            height: 50px;
+            background-image: url(../images/monzo.svg);
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-size: 32px 32px;
+        }
+
         .logout {
             width: 100%;
             height: 50px;
