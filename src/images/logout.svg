@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="logout" sketch:type="MSLayerGroup">
+            <g id="background" sketch:type="MSShapeGroup">
+                <rect id="rect3022" x="0" y="0" width="32" height="32"></rect>
+            </g>
+            <path d="M18,24 L18,28 L4,28 L4,4 L18,4 L18,8 L22,8 L22,0 L0,0 L0,32 L22,32 L22,24 L18,24 Z M12,19.997 L12,11.997 L24,11.997 L24,7.997 L32,15.997 L24,23.997 L24,19.997 L12,19.997 Z" id="polygon3027" fill="#FFFFFF" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>
