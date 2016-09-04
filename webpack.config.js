@@ -55,6 +55,23 @@ var commonConfig = {
                 useShortDoctype: true
             }
         }),
+        new FaviconsWebpackPlugin({
+            logo: './src/images/monzo.svg',
+            prefix: 'icons-[hash]/',
+            background: '#16243b',
+            title: 'Monzo Web',
+            icons: {
+                android: true,
+                appleIcon: true,
+                appleStartup: false,
+                favicons: true,
+                firefox: true,
+                opengraph: true,
+                twitter: true,
+                yandex: false,
+                windows: false
+            }
+        }),
     ],
 
     postcss: [
@@ -115,23 +132,6 @@ if (TARGET_ENV === 'prod') {
             }),
             new webpack.optimize.OccurenceOrderPlugin(),
             new ExtractTextPlugin('styles-[contenthash].css'),
-            new FaviconsWebpackPlugin({
-                logo: './src/images/monzo.svg',
-                prefix: 'icons-[hash]/',
-                background: '#16243b',
-                title: 'Monzo Web',
-                icons: {
-                    android: false,
-                    appleIcon: true,
-                    appleStartup: false,
-                    favicons: true,
-                    firefox: true,
-                    opengraph: true,
-                    twitter: true,
-                    yandex: false,
-                    windows: false
-                }
-            }),
             new ProgressBarPlugin({
                 renderThrottle: 500
             })
