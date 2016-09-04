@@ -13,7 +13,7 @@ view account balance =
             , div [ class "description" ] [ text "Card Balance" ]
             ]
         , div [ class "balance-unit" ]
-            [ viewAmount balance.spendToday balance.currency
+            [ viewAmount (abs balance.spendToday) balance.currency
             , div [ class "description" ] [ text "Spend Today" ]
             ]
         ]
