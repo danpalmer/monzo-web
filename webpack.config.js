@@ -110,6 +110,7 @@ if (TARGET_ENV === 'dev') {
                 },
                 {
                     test: /\.(css|scss)$/,
+                    exclude: [/elm-stuff/, /node_modules/],
                     loaders: [
                         'style-loader',
                         'css-loader',
@@ -151,6 +152,7 @@ if (TARGET_ENV === 'prod') {
                 },
                 {
                     test: /\.(css|scss)$/,
+                    exclude: [/elm-stuff/, /node_modules/],
                     loader: ExtractTextPlugin.extract( 'style-loader', [
                         'css-loader',
                         'postcss-loader',
