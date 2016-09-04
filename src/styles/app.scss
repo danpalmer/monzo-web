@@ -3,10 +3,12 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 
 @import 'variables';
 
+@import 'views/account';
 @import 'views/loading';
 @import 'views/not-found';
 @import 'views/login';
 
+@import 'components/balance';
 @import 'components/spinner';
 
 

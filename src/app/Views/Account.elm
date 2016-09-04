@@ -13,9 +13,11 @@ module Views.Account
 import Task
 import Platform.Cmd
 import Html exposing (..)
+import Html.Attributes exposing (class)
 import Utils.Auth as Auth
 import Api.Monzo as Monzo
 import Api.Monzo.Models exposing (Account, Balance)
+import Components.Balance as BalanceComponent
 
 
 -- Model
@@ -117,4 +119,11 @@ getBalance authDetails account =
 
 view : Model -> Html Msg
 view model =
-    div [] [ h1 [] [ text model.authDetails.userID ] ]
+    div [ class "view-account" ]
+        [ div [ class "balances" ] (viewBalances model)
+        ]
+
+
+viewBalances : Model -> List (Html Msg)
+viewBalances model =
+    List.map (\( x, y ) -> BalanceComponent.view x y) model.accounts
