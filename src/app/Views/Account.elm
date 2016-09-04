@@ -121,6 +121,7 @@ view : Model -> Html Msg
 view model =
     div [ class "view-account" ]
         [ div [ class "balances" ] (viewBalances model)
+        , div [ class "transactions" ] []
         ]
 
 
