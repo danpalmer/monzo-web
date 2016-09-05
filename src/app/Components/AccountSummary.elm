@@ -1,4 +1,4 @@
-module Components.Balance exposing (view)
+module Components.AccountSummary exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -7,7 +7,7 @@ import Api.Monzo.Models exposing (Account, Balance, Currency(..))
 
 view : Account -> Balance -> Html a
 view account balance =
-    div [ class "component-balance" ]
+    div [ class "component-account-summary" ]
         [ div [ class "balance-unit" ]
             [ viewAmount balance.balance balance.currency
             , div [ class "description" ] [ text "Card Balance" ]

@@ -17,7 +17,7 @@ import Html.Attributes exposing (class)
 import Utils.Auth as Auth
 import Api.Monzo as Monzo
 import Api.Monzo.Models exposing (Account, Balance)
-import Components.Balance as BalanceComponent
+import Components.AccountSummary as AccountSummary
 import Prelude exposing (join3)
 
 
@@ -139,7 +139,7 @@ viewHeader model =
 
 viewBalances : Model -> List (Html Msg)
 viewBalances model =
-    List.map (\( x, y ) -> BalanceComponent.view x y) model.accounts
+    List.map (\( x, y ) -> AccountSummary.view x y) model.accounts
 
 
 viewLogout : Model -> Html Msg
