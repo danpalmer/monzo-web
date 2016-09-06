@@ -18,7 +18,7 @@ loginUrl : String -> Erl.Url -> Erl.Url
 loginUrl state redirectUrl =
     let
         url =
-            Erl.parse "https://auth.getmondo.co.uk/"
+            Settings.monzoAuthBase
     in
         { url
             | query =
@@ -42,7 +42,7 @@ exchangeAuthCode code redirectUrl =
             , "code" => code
             ]
     in
-        post "https://api.getmondo.co.uk/oauth2/token"
+        post (monzoUrl [ "oauth2", "token" ])
             |> withUrlEncodedBody data
             |> withHeader "Content-type" "application/x-www-form-urlencoded"
             |> send (jsonReader decodeApiAuthDetails) stringReader
@@ -52,12 +52,12 @@ exchangeAuthCode code redirectUrl =
 
 getAccounts : AuthDetails -> Task ApiError (List Account)
 getAccounts authDetails =
-    monzoGet "https://api.getmondo.co.uk/accounts" authDetails decodeAccountList []
+    monzoGet [ "accounts" ] authDetails decodeAccountList []
 
 
 getBalance : AuthDetails -> Account -> Task ApiError Balance
 getBalance authDetails account =
-    monzoGet "https://api.getmondo.co.uk/balance"
+    monzoGet [ "balance" ]
         authDetails
         decodeBalance
         [ "account_id" => account.id
@@ -88,7 +88,7 @@ getTransactions authDetails account before since =
                 Nothing ->
                     []
     in
-        monzoGet "https://api.getmondo.co.uk/transactions"
+        monzoGet [ "transactions" ]
             authDetails
             decodeTransactionList
             [ "account_id" => account.id
@@ -122,10 +122,15 @@ httpErrorToApiError err =
             ClientError
 
 
-monzoGet : String -> AuthDetails -> Decoder a -> List ( String, String ) -> Task ApiError a
-monzoGet url authDetails decoder query =
-    get (H.url url query)
+monzoGet : List String -> AuthDetails -> Decoder a -> List ( String, String ) -> Task ApiError a
+monzoGet urlSegments authDetails decoder query =
+    get (H.url (monzoUrl urlSegments) query)
         |> withHeader "Authorization" ("Bearer " ++ authDetails.accessToken)
         |> send (jsonReader decoder) stringReader
         |> Task.map (\response -> response.data)
         |> Task.mapError httpErrorToApiError
+
+
+monzoUrl : List String -> String
+monzoUrl segments =
+    Erl.toString (Erl.appendPathSegments segments Settings.monzoApiBase)

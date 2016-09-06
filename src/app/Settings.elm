@@ -1,7 +1,18 @@
 module Settings exposing (..)
 
+import Erl
+
+
 -- Monzo API Details
 -- (Not secret these are safe to publish)
+
+
+monzoAuthBase =
+    Erl.parse "https://auth.getmondo.co.uk/"
+
+
+monzoApiBase =
+    Erl.parse "https://api.getmondo.co.uk/"
 
 
 monzoClientID =
