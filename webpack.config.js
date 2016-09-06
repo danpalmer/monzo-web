@@ -1,6 +1,5 @@
 var merge = require('webpack-merge');
 var webpack = require('webpack');
-var writefile = require('writefile');
 var autoprefixer = require('autoprefixer');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
