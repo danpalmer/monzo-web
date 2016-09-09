@@ -11,12 +11,13 @@ module Views.Account
         )
 
 import Task
+import Dict exposing (Dict)
 import Platform.Cmd
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Utils.Auth as Auth
 import Api.Monzo as Monzo
-import Api.Monzo.Models exposing (Account, Balance)
+import Api.Monzo.Models exposing (Account, Balance, Transaction)
 import Components.AccountSummary as AccountSummary
 import Prelude exposing (join3)
 
@@ -27,6 +28,7 @@ import Prelude exposing (join3)
 type alias Model =
     { authDetails : Auth.AuthDetails
     , accounts : List ( Account, Balance )
+    , transactions : Dict Account (List Transaction)
     , error : Maybe Monzo.ApiError
     }
 
@@ -35,6 +37,7 @@ empty : Model
 empty =
     { authDetails = Auth.emptyAuthDetails
     , accounts = []
+    , transactions = Dict.empty
     , error = Nothing
     }
 
@@ -43,6 +46,7 @@ init : Auth.AuthDetails -> Model
 init authDetails =
     { authDetails = authDetails
     , accounts = []
+    , transactions = Dict.empty
     , error = Nothing
     }
 
