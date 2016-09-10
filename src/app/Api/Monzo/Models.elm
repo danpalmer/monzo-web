@@ -88,6 +88,6 @@ type alias Transaction =
     , merchant : Merchant
     , notes : String
     , isLoad : Bool
-    , settled : Date
+    , settled : Maybe Date
     , declineReason : Maybe DeclineReason
     }

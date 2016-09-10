@@ -162,7 +162,7 @@ decodeTransaction =
         |: ("merchant" := decodeMerchant)
         |: ("notes" := string)
         |: ("is_load" := bool)
-        |: ("settled" := date)
+        |: ("settled" := maybe date)
         |: ("decline_reason"
                 := maybe decodeDeclineReason
                 |> (withDefault Nothing)
