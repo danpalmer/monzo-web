@@ -120,7 +120,7 @@ decodeMerchant =
         Merchant
         ("address" := decodeAddress)
         ("created" := date)
-        ("group" := string)
+        ("group_id" := string)
         ("id" := string)
         ("logo" := decodeUrl)
         ("emoji" := string)
