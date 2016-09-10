@@ -163,7 +163,10 @@ decodeTransaction =
         |: ("notes" := string)
         |: ("is_load" := bool)
         |: ("settled" := date)
-        |: ("decline_reason" := maybe decodeDeclineReason)
+        |: ("decline_reason"
+                := maybe decodeDeclineReason
+                |> (withDefault Nothing)
+           )
 
 
 decodeAccountList : Decoder (List Account)
