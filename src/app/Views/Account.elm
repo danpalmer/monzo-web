@@ -70,6 +70,7 @@ type Msg
     = AuthLoaded
     | ReceiveAccounts (List Account)
     | ReceiveBalance Account Balance
+    | ReceiveTransactions Account (List Transaction)
     | Error Monzo.ApiError
 
 
@@ -81,11 +82,30 @@ update msg model =
 
         ReceiveAccounts accounts ->
             { model | error = Nothing }
-                ! (getBalances model.authDetails accounts)
+                ! ((getBalances model.authDetails accounts)
+                    ++ (getTransactionsForAccounts model.authDetails accounts)
+                  )
 
         ReceiveBalance account balance ->
+            let
+                -- TODO: Only insert if not already present
+                newAccounts =
+                    sortAccounts (( account, balance ) :: model.accounts)
+
+                firstAccount =
+                    Maybe.map fst (List.head newAccounts)
+            in
+                ( { model
+                    | accounts = newAccounts
+                    , selectedAccount = firstAccount
+                    , error = Nothing
+                  }
+                , Cmd.none
+                )
+
+        ReceiveTransactions account transactions ->
             ( { model
-                | accounts = sortAccounts (( account, balance ) :: model.accounts)
+                | transactions = Dict.insert account.id transactions model.transactions
                 , error = Nothing
               }
             , Cmd.none
@@ -119,6 +139,17 @@ getBalance : Auth.AuthDetails -> Account -> Cmd Msg
 getBalance authDetails account =
     Monzo.getBalance authDetails account
         |> Task.perform Error (ReceiveBalance account)
+
+
+getTransactionsForAccounts : Auth.AuthDetails -> List Account -> List (Cmd Msg)
+getTransactionsForAccounts authDetails accounts =
+    (List.map (getTransactionsForAccount authDetails) accounts)
+
+
+getTransactionsForAccount : Auth.AuthDetails -> Account -> Cmd Msg
+getTransactionsForAccount authDetails account =
+    Monzo.getRecentTransactions authDetails account
+        |> Task.perform Error (ReceiveTransactions account)
 
 
 
