@@ -28,7 +28,7 @@ import Prelude exposing (join3)
 type alias Model =
     { authDetails : Auth.AuthDetails
     , accounts : List ( Account, Balance )
-    , transactions : Dict Account (List Transaction)
+    , transactions : Dict String (List Transaction)
     , error : Maybe Monzo.ApiError
     }
 
