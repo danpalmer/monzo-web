@@ -94,7 +94,7 @@ update msg model =
 
 sortAccounts : List ( Account, Balance ) -> List ( Account, Balance )
 sortAccounts =
-    identity
+    List.sortBy (\( a, _ ) -> a.id)
 
 
 
