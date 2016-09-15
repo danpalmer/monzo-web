@@ -10,6 +10,8 @@ $icon-font-path: "~bootstrap-sass/assets/fonts/bootstrap/";
 
 @import 'components/account-summary';
 @import 'components/spinner';
+@import 'components/transactions-list';
+@import 'components/transaction';
 
 
 body {

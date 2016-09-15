@@ -19,6 +19,7 @@ import Utils.Auth as Auth
 import Api.Monzo as Monzo
 import Api.Monzo.Models exposing (Account, Balance, Transaction)
 import Components.AccountSummary as AccountSummary
+import Components.TransactionsList as TransactionsList
 import Prelude exposing (join3)
 
 
@@ -166,7 +167,9 @@ view model =
                 [ (viewLogout model)
                 ]
             )
-        , div [ class "transactions" ] []
+        , div [ class "transactions" ]
+            [ viewTransactions model
+            ]
         ]
 
 
@@ -185,3 +188,23 @@ viewLogout model =
     div [ class "logout" ]
         [ button [] []
         ]
+
+
+viewTransactions : Model -> Html Msg
+viewTransactions model =
+    let
+        account =
+            model.selectedAccount
+
+        accountId =
+            Maybe.map .id account
+
+        transactions =
+            Maybe.andThen accountId (flip Dict.get model.transactions)
+    in
+        case ( account, transactions ) of
+            ( Just acc, Just txs ) ->
+                TransactionsList.view acc txs
+
+            otherwise ->
+                div [] [ text "No selected account" ]
