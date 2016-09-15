@@ -30,6 +30,7 @@ type alias Model =
     , accounts : List ( Account, Balance )
     , transactions : Dict String (List Transaction)
     , error : Maybe Monzo.ApiError
+    , selectedAccount : Maybe Account
     }
 
 
@@ -39,6 +40,7 @@ empty =
     , accounts = []
     , transactions = Dict.empty
     , error = Nothing
+    , selectedAccount = Nothing
     }
 
 
@@ -48,6 +50,7 @@ init authDetails =
     , accounts = []
     , transactions = Dict.empty
     , error = Nothing
+    , selectedAccount = Nothing
     }
 
 
