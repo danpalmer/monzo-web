@@ -51,24 +51,24 @@ urlUpdate result m =
 
             Routes.Login ->
                 let
-                    ( model', msg ) =
+                    ( model_, msg ) =
                         Login.mountedRoute model.loginModel
                 in
-                    ( { model | loginModel = model' }, Cmd.map LoginMsg msg )
+                    ( { model | loginModel = model_ }, Cmd.map LoginMsg msg )
 
             Routes.ReceiveAuth ->
                 let
-                    ( model', msg ) =
+                    ( model_, msg ) =
                         ReceiveAuth.mountedRoute model.receiveAuthModel
                 in
-                    ( { model | receiveAuthModel = model' }, Cmd.map ReceiveAuthMsg msg )
+                    ( { model | receiveAuthModel = model_ }, Cmd.map ReceiveAuthMsg msg )
 
             Routes.Account ->
                 let
-                    ( model', msg ) =
+                    ( model_, msg ) =
                         Account.mountedRoute model.accountModel
                 in
-                    ( { model | accountModel = model' }, Cmd.map AccountMsg msg )
+                    ( { model | accountModel = model_ }, Cmd.map AccountMsg msg )
 
             otherwise ->
                 ( model, Cmd.none )

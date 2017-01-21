@@ -94,7 +94,7 @@ update msg model =
                     sortAccounts (( account, balance ) :: model.accounts)
 
                 firstAccount =
-                    Maybe.map fst (List.head newAccounts)
+                    Maybe.map Tuple.first (List.head newAccounts)
             in
                 ( { model
                     | accounts = newAccounts

@@ -102,8 +102,8 @@ isValidState model state =
         Nothing ->
             False
 
-        Just state' ->
-            state == state'
+        Just state_ ->
+            state == state_
 
 
 

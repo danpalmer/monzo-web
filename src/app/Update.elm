@@ -23,24 +23,24 @@ update msg model =
     case Debug.log "Update" msg of
         LoginMsg loginMsg ->
             let
-                ( model', msg ) =
+                ( model_, msg ) =
                     Login.update loginMsg model.loginModel
             in
-                ( { model | loginModel = model' }, Cmd.map LoginMsg msg )
+                ( { model | loginModel = model_ }, Cmd.map LoginMsg msg )
 
         ReceiveAuthMsg receiveAuthMsg ->
             let
-                ( model', msg ) =
+                ( model_, msg ) =
                     ReceiveAuth.update receiveAuthMsg model.receiveAuthModel
             in
-                ( { model | receiveAuthModel = model' }, Cmd.map ReceiveAuthMsg msg )
+                ( { model | receiveAuthModel = model_ }, Cmd.map ReceiveAuthMsg msg )
 
         AccountMsg accountMsg ->
             let
-                ( model', msg ) =
+                ( model_, msg ) =
                     Account.update accountMsg model.accountModel
             in
-                ( { model | accountModel = model' }, Cmd.map AccountMsg msg )
+                ( { model | accountModel = model_ }, Cmd.map AccountMsg msg )
 
         ReadPersistedAuth authDetails ->
             authLoaded authDetails model
@@ -64,7 +64,7 @@ authLoaded authDetails model =
         authExpired =
             Auth.expired authDetails model.flags.startTime
 
-        model' =
+        model_ =
             { model | accountModel = Account.init authDetails }
 
         atHome =
@@ -72,16 +72,16 @@ authLoaded authDetails model =
     in
         if (authRequired && authExpired) then
             -- If we don't have the auth we need, redirect to Login
-            ( model', Routes.navigate Routes.Login )
+            ( model_, Routes.navigate Routes.Login )
         else if (atHome && (not authExpired)) then
             -- If we're on the landing page, and have auth, go to Account
-            model'
+            model_
                 ! [ Routes.navigate Routes.Account
                   , sendMsg (AccountMsg Account.AuthLoaded)
                   ]
         else if (atHome && authExpired) then
             -- If we're on the landing page, and have no auth, go to Login
-            ( model', Routes.navigate Routes.Login )
+            ( model_, Routes.navigate Routes.Login )
         else
             -- We're on a different route, so just stay there and update the model
-            ( model', sendMsg (AccountMsg Account.AuthLoaded) )
+            ( model_, sendMsg (AccountMsg Account.AuthLoaded) )

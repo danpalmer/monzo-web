@@ -34,7 +34,7 @@ formatAmount x =
             x // 100
 
         minor =
-            x `rem` 100
+            rem x 100
 
         zeros =
             if minor < 10 then
