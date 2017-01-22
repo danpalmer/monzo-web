@@ -64,11 +64,11 @@ getBalance authDetails account =
 
 getRecentTransactions : AuthDetails -> Account -> Task ApiError (List Transaction)
 getRecentTransactions authDetails account =
-    getTransactions authDetails account Nothing Nothing
+    getTransactions authDetails account Nothing Nothing (Just 100)
 
 
-getTransactions : AuthDetails -> Account -> Maybe Date -> Maybe Date -> Task ApiError (List Transaction)
-getTransactions authDetails account before since =
+getTransactions : AuthDetails -> Account -> Maybe Date -> Maybe Date -> Maybe Int -> Task ApiError (List Transaction)
+getTransactions authDetails account before since limit =
     let
         beforeParam =
             case before of
@@ -85,13 +85,27 @@ getTransactions authDetails account before since =
 
                 Nothing ->
                     []
+
+        limitParam =
+            case limit of
+                Just lim ->
+                    [ "limit" => (toString lim) ]
+
+                Nothing ->
+                    []
+
+        query =
+            [ "account_id" => account.id
+            , "expand[]" => "merchant"
+            ]
+                ++ beforeParam
+                ++ sinceParam
+                ++ limitParam
     in
         monzoGet [ "transactions" ]
             authDetails
             decodeTransactionList
-            [ "account_id" => account.id
-            , "expand[]" => "merchant"
-            ]
+            query
 
 
 
