@@ -8,7 +8,7 @@
   "scripts": {
     "start": "webpack-dev-server --hot",
     "debug": "webpack-dev-server --hot --debug",
-    "build": "webpack --display-error-details",
+    "build": "TARGET_ENV=prod webpack --display-error-details",
     "install-all": "npm install; elm package install --yes"
   },
   "devDependencies": {
