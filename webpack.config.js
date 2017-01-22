@@ -8,6 +8,8 @@ var FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 var TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? 'prod' : 'dev';
 
+var DEBUG = process.argv.indexOf('--debug') !== -1;
+
 var commonConfig = {
 
     entry: './src/app/app.js',
@@ -61,6 +63,8 @@ var commonConfig = {
     ],
 };
 
+elmDebugArg = DEBUG ? '&debug=true' : '';
+
 if (TARGET_ENV === 'dev') {
     module.exports = merge(commonConfig, {
         output: {
@@ -88,7 +92,7 @@ if (TARGET_ENV === 'dev') {
                 {
                     test:    /\.elm$/,
                     exclude: [/elm-stuff/, /node_modules/],
-                    loader:  'elm-hot!elm-webpack?verbose=true&warn=true&debug=true'
+                    loader:  'elm-hot!elm-webpack?verbose=true&warn=true' + elmDebugArg
                 },
                 {
                     test: /\.(css|scss)$/,
