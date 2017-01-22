@@ -44,7 +44,6 @@ exchangeAuthCode code redirectUrl =
     in
         post (monzoUrl [ "oauth2", "token" ])
             |> withUrlEncodedBody data
-            |> withHeader "Content-type" "application/x-www-form-urlencoded"
             |> withExpect (Http.expectJson decodeApiAuthDetails)
             |> toTask
             |> Task.mapError httpErrorToApiError
