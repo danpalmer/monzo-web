@@ -6,11 +6,14 @@ import Api.Monzo.Models exposing (Currency(..))
 formatAmount : Int -> String
 formatAmount x =
     let
+        x_ =
+            abs x
+
         major =
-            x // 100
+            x_ // 100
 
         minor =
-            rem x 100
+            rem x_ 100
 
         zeros =
             if minor < 10 then
