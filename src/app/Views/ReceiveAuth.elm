@@ -63,7 +63,7 @@ update msg model =
     case msg of
         LoadedState state ->
             if (isValidState model state) then
-                ( { model | authState = AuthDone }
+                ( { model | authState = AuthLoading }
                 , getAuthToken model
                 )
             else
