@@ -3,6 +3,33 @@
 .component-transaction {
     width: 100%;
     color: $sub-text-colour;
-    padding: 10px;
     border-bottom: 1px solid darken(white, 10%);
+
+    display: flex;
+    flex-direction: row;
+
+    &.top-up {
+        color: saturate($green, 25%);
+    }
+
+    .icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 3px;
+        margin: 10px;
+    }
+
+    .name {
+        line-height: 30px;
+        margin: 10px;
+        font-size: 15px;
+        flex-grow: 1;
+    }
+
+    .amount {
+        line-height: 30px;
+        margin: 10px;
+        font-size: 15px;
+        align-self: flex-end;
+    }
 }
