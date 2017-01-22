@@ -31,8 +31,8 @@ routeParser =
 
 
 decode : Navigation.Location -> Maybe Route
-decode loc =
-    Debug.log "decode" (UrlParser.parsePath routeParser loc)
+decode =
+    UrlParser.parsePath routeParser
 
 
 decodeOr404 : Navigation.Location -> Route
