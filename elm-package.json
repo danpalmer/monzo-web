@@ -5,7 +5,7 @@
     "license": "BSD3",
     "source-directories": [
         "src/app",
-        "lib/local-storage/src"
+        "lib/local-storage"
     ],
     "exposed-modules": [],
     "native-modules": true,
