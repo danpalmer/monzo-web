@@ -90,7 +90,10 @@ urlUpdate result m =
                     ( model_, msg ) =
                         Account.mountedRoute model.accountModel
                 in
-                    ( { model | accountModel = model_ }, Cmd.map AccountMsg msg )
+                    { model | accountModel = model_ }
+                        ! [ Cmd.map AccountMsg msg
+                          , getAuthDetailsFromStorage model.flags.startTime
+                          ]
 
             otherwise ->
                 ( model, Cmd.none )
