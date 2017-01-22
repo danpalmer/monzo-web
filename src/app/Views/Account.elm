@@ -58,7 +58,7 @@ init authDetails =
 mountedRoute : Model -> ( Model, Cmd Msg )
 mountedRoute model =
     if (Auth.isEmpty model.authDetails) then
-        ( model, Cmd.none )
+        Debug.log "empty auth" ( model, Cmd.none )
     else
         ( model, getAccounts model.authDetails )
 
