@@ -85,7 +85,7 @@ type alias Transaction =
     , currency : Currency
     , description : String
     , id : String
-    , merchant : Merchant
+    , merchant : Maybe Merchant
     , notes : String
     , isLoad : Bool
     , settled : Maybe Date
