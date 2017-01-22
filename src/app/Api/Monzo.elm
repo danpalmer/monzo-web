@@ -12,7 +12,6 @@ import Utils.Auth exposing (AuthDetails)
 import Api.Monzo.Models exposing (..)
 import Api.Monzo.Decoder exposing (..)
 import Api.Monzo.Util exposing (formatDate)
-import Debug
 
 
 loginUrl : String -> Erl.Url -> Erl.Url
@@ -101,15 +100,28 @@ getTransactions authDetails account before since =
 
 type ApiError
     = NetworkError
-    | ClientError
-    | ServerError
+    | ClientError String
+    | ServerError String
+
+
+describeApiError : ApiError -> ( String, String )
+describeApiError err =
+    case err of
+        NetworkError ->
+            ( "Couldn't connect to Monzo", "Are you connected to the internet?" )
+
+        ServerError e ->
+            ( "Something went wrong", e )
+
+        ClientError e ->
+            ( "Something went wrong", e )
 
 
 httpErrorToApiError : Http.Error -> ApiError
 httpErrorToApiError err =
     case err of
-        Http.BadPayload _ _ ->
-            ServerError
+        Http.BadPayload e _ ->
+            ServerError e
 
         Http.NetworkError ->
             NetworkError
@@ -117,12 +129,19 @@ httpErrorToApiError err =
         Http.Timeout ->
             NetworkError
 
-        Http.BadStatus _ ->
-            ClientError
+        Http.BadStatus resp ->
+            if (statusIsServerError resp) then
+                ServerError resp.status.message
+            else
+                ClientError resp.status.message
 
-        Http.BadUrl u ->
-            Debug.log u
-                ClientError
+        Http.BadUrl url ->
+            ClientError ("Invalid URL: " ++ url)
+
+
+statusIsServerError : Http.Response a -> Bool
+statusIsServerError resp =
+    resp.status.code >= 500 && resp.status.code < 600
 
 
 monzoGet : List String -> AuthDetails -> Decoder a -> List ( String, String ) -> Task ApiError a

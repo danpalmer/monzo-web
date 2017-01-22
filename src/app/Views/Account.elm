@@ -18,6 +18,7 @@ import Html.Attributes exposing (class)
 import Utils.Auth as Auth
 import Api.Monzo as Monzo
 import Api.Monzo.Models exposing (Account, Balance, Transaction)
+import Components.Error as ErrorComponent
 import Components.AccountSummary as AccountSummary
 import Components.TransactionsList as TransactionsList
 import Prelude exposing (join3, resultDetailToMsg)
@@ -159,18 +160,23 @@ getTransactionsForAccount authDetails account =
 
 view : Model -> Html Msg
 view model =
-    div [ class "view-account" ]
-        [ div [ class "balances" ]
-            (join3
-                [ viewHeader model ]
-                (viewBalances model)
-                [ (viewLogout model)
+    case model.error of
+        Nothing ->
+            div [ class "view-account" ]
+                [ div [ class "balances" ]
+                    (join3
+                        [ viewHeader model ]
+                        (viewBalances model)
+                        [ (viewLogout model)
+                        ]
+                    )
+                , div [ class "transactions" ]
+                    [ viewTransactions model
+                    ]
                 ]
-            )
-        , div [ class "transactions" ]
-            [ viewTransactions model
-            ]
-        ]
+
+        Just err ->
+            ErrorComponent.view err
 
 
 viewHeader : Model -> Html Msg
