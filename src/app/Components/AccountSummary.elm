@@ -2,6 +2,7 @@ module Components.AccountSummary exposing (view)
 
 import Html exposing (..)
 import Html.Attributes exposing (class)
+import Utils.Formatting.Currency exposing (..)
 import Api.Monzo.Models exposing (Account, Balance, Currency(..))
 
 
@@ -25,34 +26,3 @@ viewAmount amount currency =
         [ span [ class "currency" ] [ text (formatCurrency currency) ]
         , span [ class "amount" ] [ text (formatAmount amount) ]
         ]
-
-
-formatAmount : Int -> String
-formatAmount x =
-    let
-        major =
-            x // 100
-
-        minor =
-            rem x 100
-
-        zeros =
-            if minor < 10 then
-                "0"
-            else
-                ""
-    in
-        (toString major) ++ "." ++ zeros ++ (toString minor)
-
-
-formatCurrency : Currency -> String
-formatCurrency c =
-    case c of
-        GBP ->
-            "£"
-
-        USD ->
-            "$"
-
-        EUR ->
-            "€"
