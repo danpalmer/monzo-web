@@ -1,6 +1,8 @@
-module Update exposing (Msg(..), update)
+module Update exposing (Msg(..), update, urlUpdate)
 
 import Routes
+import Task
+import Navigation exposing (Location)
 import Prelude exposing (..)
 import Model exposing (Model)
 import Views.Login as Login
@@ -16,6 +18,7 @@ type Msg
     | LoginMsg Login.Msg
     | ReceiveAuthMsg ReceiveAuth.Msg
     | AccountMsg Account.Msg
+    | NavigateMsg Location
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -48,8 +51,49 @@ update msg model =
         FailedToReadPersistedAuth _ ->
             ( model, Routes.navigate Routes.Login )
 
+        NavigateMsg loc ->
+            urlUpdate (Routes.decode loc) model
+
         otherwise ->
             ( model, Cmd.none )
+
+
+urlUpdate : Maybe Routes.Route -> Model -> ( Model, Cmd Msg )
+urlUpdate result m =
+    let
+        route =
+            Routes.routeOr404 result
+
+        model =
+            { m | currentRoute = route }
+    in
+        case Debug.log "Navigating to" route of
+            Routes.Home ->
+                ( model, getAuthDetailsFromStorage model.flags.startTime )
+
+            Routes.Login ->
+                let
+                    ( model_, msg ) =
+                        Login.mountedRoute model.loginModel
+                in
+                    ( { model | loginModel = model_ }, Cmd.map LoginMsg msg )
+
+            Routes.ReceiveAuth ->
+                let
+                    ( model_, msg ) =
+                        ReceiveAuth.mountedRoute model.receiveAuthModel
+                in
+                    ( { model | receiveAuthModel = model_ }, Cmd.map ReceiveAuthMsg msg )
+
+            Routes.Account ->
+                let
+                    ( model_, msg ) =
+                        Account.mountedRoute model.accountModel
+                in
+                    ( { model | accountModel = model_ }, Cmd.map AccountMsg msg )
+
+            otherwise ->
+                ( model, Cmd.none )
 
 
 authLoaded : Auth.AuthDetails -> Model -> ( Model, Cmd Msg )
@@ -85,3 +129,14 @@ authLoaded authDetails model =
         else
             -- We're on a different route, so just stay there and update the model
             ( model_, sendMsg (AccountMsg Account.AuthLoaded) )
+
+
+
+-- Cmd
+
+
+getAuthDetailsFromStorage : Int -> Cmd Msg
+getAuthDetailsFromStorage appStartTime =
+    Auth.getAuthDetailsFromStorage appStartTime
+        |> Task.attempt
+            (resultDetailToMsg FailedToReadPersistedAuth ReadPersistedAuth)

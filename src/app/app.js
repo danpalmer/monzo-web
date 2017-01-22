@@ -11,7 +11,6 @@ var baseUrl = (
 var currentMilliseconds = (new Date()).getTime();
 
 Elm.Main.fullscreen({
-    initialPath: window.location.pathname,
     initialSeed: currentMilliseconds,
     startTime: currentMilliseconds,
     baseUrl: baseUrl,

@@ -2,6 +2,7 @@ module Model exposing (Model, Flags, initialModel)
 
 import Erl
 import Routes
+import Navigation exposing (Location)
 import Utils.Url exposing (parseUrlParameters)
 import Views.Login as Login
 import Views.ReceiveAuth as ReceiveAuth
@@ -18,16 +19,15 @@ type alias Model =
 
 
 type alias Flags =
-    { initialPath : String
-    , initialSeed : Int
+    { initialSeed : Int
     , startTime : Int
     , baseUrl : String
     , query : String
     }
 
 
-initialModel : Flags -> Model
-initialModel flags =
+initialModel : Flags -> Location -> Model
+initialModel flags location =
     let
         baseUrl =
             Erl.parse flags.baseUrl
@@ -35,7 +35,7 @@ initialModel flags =
         params =
             (parseUrlParameters flags.query)
     in
-        { currentRoute = Routes.decodePathOr404 flags.initialPath
+        { currentRoute = Routes.decodeOr404 location
         , loginModel = Login.init flags.initialSeed baseUrl
         , receiveAuthModel = ReceiveAuth.init params baseUrl flags.startTime
         , accountModel = Account.empty

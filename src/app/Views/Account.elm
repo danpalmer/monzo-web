@@ -20,7 +20,7 @@ import Api.Monzo as Monzo
 import Api.Monzo.Models exposing (Account, Balance, Transaction)
 import Components.AccountSummary as AccountSummary
 import Components.TransactionsList as TransactionsList
-import Prelude exposing (join3)
+import Prelude exposing (join3, resultDetailToMsg)
 
 
 -- Model
@@ -128,7 +128,7 @@ sortAccounts =
 getAccounts : Auth.AuthDetails -> Cmd Msg
 getAccounts authDetails =
     Monzo.getAccounts authDetails
-        |> Task.perform Error ReceiveAccounts
+        |> Task.attempt (resultDetailToMsg Error ReceiveAccounts)
 
 
 getBalances : Auth.AuthDetails -> List Account -> List (Cmd Msg)
@@ -139,7 +139,7 @@ getBalances authDetails accounts =
 getBalance : Auth.AuthDetails -> Account -> Cmd Msg
 getBalance authDetails account =
     Monzo.getBalance authDetails account
-        |> Task.perform Error (ReceiveBalance account)
+        |> Task.attempt (resultDetailToMsg Error (ReceiveBalance account))
 
 
 getTransactionsForAccounts : Auth.AuthDetails -> List Account -> List (Cmd Msg)
@@ -150,7 +150,7 @@ getTransactionsForAccounts authDetails accounts =
 getTransactionsForAccount : Auth.AuthDetails -> Account -> Cmd Msg
 getTransactionsForAccount authDetails account =
     Monzo.getRecentTransactions authDetails account
-        |> Task.perform Error (ReceiveTransactions account)
+        |> Task.attempt (resultDetailToMsg Error (ReceiveTransactions account))
 
 
 
@@ -200,7 +200,7 @@ viewTransactions model =
             Maybe.map .id account
 
         transactions =
-            Maybe.andThen accountId (flip Dict.get model.transactions)
+            Maybe.andThen (flip Dict.get model.transactions) accountId
     in
         case ( account, transactions ) of
             ( Just acc, Just txs ) ->

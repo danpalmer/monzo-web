@@ -2,11 +2,10 @@ module Routes exposing (..)
 
 import Navigation
 import UrlParser exposing (..)
-import Json.Decode as Json
 import Html
 import Html.Events exposing (onWithOptions)
 import Html.Attributes exposing (href)
-import String
+import Debug
 
 
 -- Routes
@@ -23,43 +22,26 @@ type Route
 routeParser : Parser (Route -> a) a
 routeParser =
     oneOf
-        [ format Home (s "")
-        , format Login (s "login")
-        , format ReceiveAuth (s "receive")
-        , format Account (s "account")
-        , format NotFound (s "404")
+        [ UrlParser.map Home (s "")
+        , UrlParser.map Login (s "login")
+        , UrlParser.map ReceiveAuth (s "receive")
+        , UrlParser.map Account (s "account")
+        , UrlParser.map NotFound (s "404")
         ]
 
 
-decodePath : String -> Result String Route
-decodePath p =
-    p
-        |> String.dropLeft 1
-        |> UrlParser.parse identity routeParser
-
-
-decode : Navigation.Location -> Result String Route
-decode location =
-    decodePath location.pathname
-
-
-decodePathOr404 : String -> Route
-decodePathOr404 p =
-    case (decodePath p) of
-        Err _ ->
-            NotFound
-
-        Ok route ->
-            route
+decode : Navigation.Location -> Maybe Route
+decode loc =
+    Debug.log "decode" (UrlParser.parsePath routeParser loc)
 
 
 decodeOr404 : Navigation.Location -> Route
 decodeOr404 location =
     case (decode location) of
-        Err _ ->
+        Nothing ->
             NotFound
 
-        Ok route ->
+        Just route ->
             route
 
 
@@ -82,13 +64,13 @@ encode route =
             "/404"
 
 
-routeOr404 : Result String Route -> Route
+routeOr404 : Maybe Route -> Route
 routeOr404 result =
     case result of
-        Ok route ->
+        Just route ->
             route
 
-        Err _ ->
+        Nothing ->
             NotFound
 
 

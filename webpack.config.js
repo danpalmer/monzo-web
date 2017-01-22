@@ -88,7 +88,7 @@ if (TARGET_ENV === 'dev') {
                 {
                     test:    /\.elm$/,
                     exclude: [/elm-stuff/, /node_modules/],
-                    loader:  'elm-hot!elm-webpack?verbose=true&warn=true'
+                    loader:  'elm-hot!elm-webpack?verbose=true&warn=true&debug=true'
                 },
                 {
                     test: /\.(css|scss)$/,

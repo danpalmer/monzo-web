@@ -1,179 +1,182 @@
 module Api.Monzo.Decoder exposing (..)
 
-import Result
 import Erl exposing (Url)
 import Api.Monzo.Models exposing (..)
 import Json.Decode exposing (..)
+import Json.Decode as JD
 import Json.Decode.Extra exposing (..)
 
 
 decodeApiAuthDetails : Decoder ApiAuthDetails
 decodeApiAuthDetails =
-    object3
+    map3
         ApiAuthDetails
-        ("access_token" := string)
-        ("expires_in" := int)
-        ("user_id" := string)
+        (field "access_token" string)
+        (field "expires_in" int)
+        (field "user_id" string)
 
 
 decodeAccount : Decoder Account
 decodeAccount =
-    object3
+    map3
         Account
-        ("id" := string)
-        ("description" := string)
-        ("created" := date)
+        (field "id" string)
+        (field "description" string)
+        (field "created" date)
 
 
 decodeCurrency : Decoder Currency
 decodeCurrency =
-    customDecoder string
+    andThen
         (\currencyValue ->
             case currencyValue of
                 "GBP" ->
-                    Result.Ok GBP
+                    succeed GBP
 
                 "USD" ->
-                    Result.Ok USD
+                    succeed USD
 
                 "EUR" ->
-                    Result.Ok EUR
+                    succeed EUR
 
                 otherwise ->
-                    Result.Err "Unsupported currency"
+                    fail "Unsupported currency"
         )
+        string
 
 
 decodeBalance : Decoder Balance
 decodeBalance =
-    object3
+    map3
         Balance
-        ("balance" := int)
-        ("currency" := decodeCurrency)
-        ("spend_today" := int)
+        (field "balance" int)
+        (field "currency" decodeCurrency)
+        (field "spend_today" int)
 
 
 decodeAddress : Decoder Address
 decodeAddress =
-    object7
+    map7
         Address
-        ("address" := string)
-        ("city" := string)
-        ("country" := string)
-        ("latitude" := float)
-        ("longitude" := float)
-        ("postcode" := string)
-        ("region" := string)
+        (field "address" string)
+        (field "city" string)
+        (field "country" string)
+        (field "latitude" float)
+        (field "longitude" float)
+        (field "postcode" string)
+        (field "region" string)
 
 
 decodeTransactionCategory : Decoder TransactionCategory
 decodeTransactionCategory =
-    customDecoder string
+    andThen
         (\categoryValue ->
             case categoryValue of
                 "general" ->
-                    Result.Ok General
+                    succeed General
 
                 "eating_out" ->
-                    Result.Ok EatingOut
+                    succeed EatingOut
 
                 "expenses" ->
-                    Result.Ok Expenses
+                    succeed Expenses
 
                 "transport" ->
-                    Result.Ok Transport
+                    succeed Transport
 
                 "cash" ->
-                    Result.Ok Cash
+                    succeed Cash
 
                 "bills" ->
-                    Result.Ok Bills
+                    succeed Bills
 
                 "entertainment" ->
-                    Result.Ok Entertainment
+                    succeed Entertainment
 
                 "shopping" ->
-                    Result.Ok Shopping
+                    succeed Shopping
 
                 "holidays" ->
-                    Result.Ok Holidays
+                    succeed Holidays
 
                 "groceries" ->
-                    Result.Ok Groceries
+                    succeed Groceries
 
                 otherwise ->
-                    Result.Err "Unsupported transaction category"
+                    fail "Unsupported transaction category"
         )
+        string
 
 
 decodeUrl : Decoder Url
 decodeUrl =
-    customDecoder string
+    andThen
         (\urlString ->
-            Result.Ok (Erl.parse urlString)
+            succeed (Erl.parse urlString)
         )
+        string
 
 
 decodeMerchant : Decoder Merchant
 decodeMerchant =
-    object8
+    map8
         Merchant
-        ("address" := decodeAddress)
-        ("created" := date)
-        ("group_id" := string)
-        ("id" := string)
-        ("logo" := decodeUrl)
-        ("emoji" := string)
-        ("name" := string)
-        ("category" := decodeTransactionCategory)
+        (field "address" decodeAddress)
+        (field "created" date)
+        (field "group_id" string)
+        (field "id" string)
+        (field "logo" decodeUrl)
+        (field "emoji" string)
+        (field "name" string)
+        (field "category" decodeTransactionCategory)
 
 
 decodeDeclineReason : Decoder DeclineReason
 decodeDeclineReason =
-    customDecoder string
+    andThen
         (\declineReason ->
             case declineReason of
                 "INSUFFICIENT_FUNDS" ->
-                    Result.Ok InsufficientFunds
+                    succeed InsufficientFunds
 
                 "CARD_INACTIVE" ->
-                    Result.Ok CardInactive
+                    succeed CardInactive
 
                 "CARD_BLOCKED" ->
-                    Result.Ok CardBlocked
+                    succeed CardBlocked
 
                 "OTHER" ->
-                    Result.Ok OtherReason
+                    succeed OtherReason
 
                 otherwise ->
-                    Result.Err "Unsupported decline reason"
+                    fail "Unsupported decline reason"
         )
+        string
 
 
 decodeTransaction : Decoder Transaction
 decodeTransaction =
     succeed Transaction
-        |: ("account_balance" := int)
-        |: ("amount" := int)
-        |: ("created" := date)
-        |: ("currency" := decodeCurrency)
-        |: ("description" := string)
-        |: ("id" := string)
-        |: ("merchant" := decodeMerchant)
-        |: ("notes" := string)
-        |: ("is_load" := bool)
-        |: ("settled" := maybe date)
-        |: ("decline_reason"
-                := maybe decodeDeclineReason
+        |: (field "account_balance" int)
+        |: (field "amount" int)
+        |: (field "created" date)
+        |: (field "currency" decodeCurrency)
+        |: (field "description" string)
+        |: (field "id" string)
+        |: (field "merchant" decodeMerchant)
+        |: (field "notes" string)
+        |: (field "is_load" bool)
+        |: (field "settled" (nullable date))
+        |: (field "decline_reason" (nullable decodeDeclineReason)
                 |> (withDefault Nothing)
            )
 
 
 decodeAccountList : Decoder (List Account)
 decodeAccountList =
-    ("accounts" := (list decodeAccount))
+    (field "accounts" (list decodeAccount))
 
 
 decodeTransactionList : Decoder (List Transaction)
 decodeTransactionList =
-    ("transactions" := (list decodeTransaction))
+    (field "transactions" (list decodeTransaction))

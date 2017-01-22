@@ -1,5 +1,6 @@
 module Views.ReceiveAuth exposing (Model, init, Msg, update, view, mountedRoute)
 
+import Prelude exposing (..)
 import Html exposing (..)
 import Task
 import Routes
@@ -130,13 +131,13 @@ view model =
 setAuthDetailsInStorage : Auth.AuthDetails -> Cmd Msg
 setAuthDetailsInStorage authDetails =
     Auth.setAuthDetailsInStorage authDetails
-        |> Task.perform ErrorPersistingApiAuthDetails PersistedApiAuthDetails
+        |> Task.attempt (resultDetailToMsg ErrorPersistingApiAuthDetails PersistedApiAuthDetails)
 
 
 getStateFromStorage : Cmd Msg
 getStateFromStorage =
     LocalStorage.get Settings.monzoOAuthStateKey
-        |> Task.perform ErrorLoadingState LoadedState
+        |> Task.attempt (resultDetailToMsg ErrorLoadingState LoadedState)
 
 
 getAuthToken : Model -> Cmd Msg
@@ -149,4 +150,8 @@ getAuthToken model =
             Maybe.withDefault "" (Dict.get "code" model.receivedDetails)
     in
         Monzo.exchangeAuthCode code redirectUrl
-            |> Task.perform ErrorExchangingApiAuthDetails ReceiveApiAuthDetails
+            |> Task.attempt
+                (resultDetailToMsg
+                    ErrorExchangingApiAuthDetails
+                    ReceiveApiAuthDetails
+                )

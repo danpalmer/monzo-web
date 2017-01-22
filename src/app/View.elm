@@ -1,7 +1,6 @@
 module View exposing (..)
 
 import Html exposing (..)
-import Html.App
 import Routes
 import Model exposing (Model)
 import Update exposing (Msg(..))
@@ -19,13 +18,13 @@ contentView model =
             Loading.view
 
         Routes.Login ->
-            Html.App.map LoginMsg (Login.view model.loginModel)
+            Html.map LoginMsg (Login.view model.loginModel)
 
         Routes.ReceiveAuth ->
-            Html.App.map ReceiveAuthMsg (ReceiveAuth.view model.receiveAuthModel)
+            Html.map ReceiveAuthMsg (ReceiveAuth.view model.receiveAuthModel)
 
         Routes.Account ->
-            Html.App.map AccountMsg (Account.view model.accountModel)
+            Html.map AccountMsg (Account.view model.accountModel)
 
         Routes.NotFound ->
             NotFound.view

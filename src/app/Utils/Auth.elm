@@ -1,12 +1,10 @@
 module Utils.Auth exposing (..)
 
 import Json.Decode as JD
-import Json.Decode as JD exposing ((:=))
 import Json.Encode as JE
 import Task exposing (Task)
 import Result
 import LocalStorage
-import Prelude exposing (andThen)
 import Settings
 import Api.Monzo.Models exposing (ApiAuthDetails)
 
@@ -30,11 +28,11 @@ isEmpty authDetails =
 
 authDetailsDecoder : JD.Decoder AuthDetails
 authDetailsDecoder =
-    JD.object3
+    JD.map3
         AuthDetails
-        ("access_token" := JD.string)
-        ("expires_at" := JD.int)
-        ("user_id" := JD.string)
+        (JD.field "access_token" JD.string)
+        (JD.field "expires_at" JD.int)
+        (JD.field "user_id" JD.string)
 
 
 decodeAuthDetails : String -> Result String AuthDetails
@@ -44,7 +42,12 @@ decodeAuthDetails str =
 
 decodeAuthDetailsTask : String -> Task String AuthDetails
 decodeAuthDetailsTask str =
-    decodeAuthDetails str |> Task.fromResult
+    case (decodeAuthDetails str) of
+        Err e ->
+            Task.fail e
+
+        Ok s ->
+            Task.succeed s
 
 
 encodeAuthDetails : AuthDetails -> String
@@ -79,7 +82,7 @@ getAuthDetailsFromStorage : Int -> Task String AuthDetails
 getAuthDetailsFromStorage appStartTime =
     LocalStorage.get Settings.authDetailsKey
         |> Task.mapError localStorageErrorToString
-        |> andThen decodeAuthDetailsTask
+        |> Task.andThen decodeAuthDetailsTask
 
 
 

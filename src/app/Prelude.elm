@@ -9,15 +9,10 @@ import String
     (,)
 
 
-andThen : (a -> Task.Task b c) -> Task.Task b a -> Task.Task b c
-andThen =
-    flip Task.andThen
-
-
 sendMsg : a -> Cmd a
 sendMsg msg =
     Task.succeed True
-        |> Task.perform (always msg) (always msg)
+        |> Task.perform (always msg)
 
 
 join3 : List a -> List a -> List a -> List a
@@ -43,3 +38,23 @@ firstOccurrence c s =
 
         head :: _ ->
             Just head
+
+
+resultToMsg : c -> c -> Result a b -> c
+resultToMsg err succ r =
+    case r of
+        Err _ ->
+            err
+
+        Ok _ ->
+            succ
+
+
+resultDetailToMsg : (a -> c) -> (b -> c) -> Result a b -> c
+resultDetailToMsg err succ r =
+    case r of
+        Err e ->
+            err e
+
+        Ok s ->
+            succ s

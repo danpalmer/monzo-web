@@ -1,5 +1,6 @@
 module Views.Login exposing (Model, init, Msg, view, update, mountedRoute)
 
+import Prelude exposing (..)
 import Random exposing (initialSeed, Seed, generate)
 import Random.String exposing (string)
 import Random.Char exposing (english)
@@ -132,4 +133,4 @@ viewContent model loginEnabled error =
 setStateInStorage : String -> Cmd Msg
 setStateInStorage state =
     LocalStorage.set Settings.monzoOAuthStateKey state
-        |> Task.perform FailedToStoreState StoredState
+        |> Task.attempt (resultDetailToMsg FailedToStoreState StoredState)

@@ -1,10 +1,10 @@
 module Api.Monzo exposing (..)
 
 import Date exposing (Date)
-import Dict
 import Task exposing (..)
 import Json.Decode exposing (Decoder)
 import Erl
+import Http
 import HttpBuilder as H exposing (..)
 import Settings
 import Prelude exposing (..)
@@ -12,6 +12,7 @@ import Utils.Auth exposing (AuthDetails)
 import Api.Monzo.Models exposing (..)
 import Api.Monzo.Decoder exposing (..)
 import Api.Monzo.Util exposing (formatDate)
+import Debug
 
 
 loginUrl : String -> Erl.Url -> Erl.Url
@@ -22,12 +23,11 @@ loginUrl state redirectUrl =
     in
         { url
             | query =
-                Dict.fromList
-                    [ "client_id" => Settings.monzoClientID
-                    , "redirect_uri" => Erl.toString redirectUrl
-                    , "response_type" => "code"
-                    , "state" => state
-                    ]
+                [ "client_id" => Settings.monzoClientID
+                , "redirect_uri" => Erl.toString redirectUrl
+                , "response_type" => "code"
+                , "state" => state
+                ]
         }
 
 
@@ -45,8 +45,8 @@ exchangeAuthCode code redirectUrl =
         post (monzoUrl [ "oauth2", "token" ])
             |> withUrlEncodedBody data
             |> withHeader "Content-type" "application/x-www-form-urlencoded"
-            |> send (jsonReader decodeApiAuthDetails) stringReader
-            |> Task.map (\response -> response.data)
+            |> withExpect (Http.expectJson decodeApiAuthDetails)
+            |> toTask
             |> Task.mapError httpErrorToApiError
 
 
@@ -106,28 +106,33 @@ type ApiError
     | ServerError
 
 
-httpErrorToApiError : Error String -> ApiError
+httpErrorToApiError : Http.Error -> ApiError
 httpErrorToApiError err =
     case err of
-        H.UnexpectedPayload _ ->
+        Http.BadPayload _ _ ->
             ServerError
 
-        H.NetworkError ->
+        Http.NetworkError ->
             NetworkError
 
-        H.Timeout ->
+        Http.Timeout ->
             NetworkError
 
-        H.BadResponse _ ->
+        Http.BadStatus _ ->
             ClientError
+
+        Http.BadUrl u ->
+            Debug.log u
+                ClientError
 
 
 monzoGet : List String -> AuthDetails -> Decoder a -> List ( String, String ) -> Task ApiError a
 monzoGet urlSegments authDetails decoder query =
-    get (H.url (monzoUrl urlSegments) query)
+    get (monzoUrl urlSegments)
+        |> withQueryParams query
         |> withHeader "Authorization" ("Bearer " ++ authDetails.accessToken)
-        |> send (jsonReader decoder) stringReader
-        |> Task.map (\response -> response.data)
+        |> withExpect (Http.expectJson decoder)
+        |> toTask
         |> Task.mapError httpErrorToApiError
 
 
