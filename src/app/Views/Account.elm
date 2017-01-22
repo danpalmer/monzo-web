@@ -11,6 +11,7 @@ module Views.Account
         )
 
 import Task
+import Date.Extra as DE
 import Dict exposing (Dict)
 import Platform.Cmd
 import Html exposing (..)
@@ -107,12 +108,16 @@ update msg model =
                 )
 
         ReceiveTransactions account transactions ->
-            ( { model
-                | transactions = Dict.insert account.id transactions model.transactions
-                , error = Nothing
-              }
-            , Cmd.none
-            )
+            let
+                transactions_ =
+                    sortTransactions transactions
+            in
+                ( { model
+                    | transactions = Dict.insert account.id transactions_ model.transactions
+                    , error = Nothing
+                  }
+                , Cmd.none
+                )
 
         Error error ->
             ( { model | error = Just error }, Cmd.none )
@@ -121,6 +126,11 @@ update msg model =
 sortAccounts : List ( Account, Balance ) -> List ( Account, Balance )
 sortAccounts =
     List.sortBy (\( a, _ ) -> a.id)
+
+
+sortTransactions : List Transaction -> List Transaction
+sortTransactions =
+    List.sortWith (\a b -> DE.compare b.created a.created)
 
 
 
