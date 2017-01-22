@@ -118,7 +118,7 @@ if (TARGET_ENV === 'prod') {
                 mangle: true
             }),
             new webpack.optimize.OccurenceOrderPlugin(),
-            new ExtractTextPlugin('styles-[contenthash].css'),
+            new ExtractTextPlugin('/styles-[contenthash].css'),
             new ProgressBarPlugin({
                 renderThrottle: 500
             }),
@@ -143,7 +143,7 @@ if (TARGET_ENV === 'prod') {
 
         output: {
             path: './dist',
-            filename: 'app-[hash].js'
+            filename: '/app-[hash].js'
         },
 
         module: {
