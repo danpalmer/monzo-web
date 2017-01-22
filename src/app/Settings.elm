@@ -14,12 +14,12 @@ monzoAuthBase =
 
 monzoApiBase : Erl.Url
 monzoApiBase =
-    Erl.parse "https://api.getmondo.co.uk/"
+    Erl.parse "https://api.monzo.com/"
 
 
 monzoClientID : String
 monzoClientID =
-    "oauthclient_0000968G0rIJ6Uc40n0iHZ"
+    "oauthclient_00009GeYmZ5UZrrT6ERwKv"
 
 
 monzoOwnerID : String
@@ -29,7 +29,7 @@ monzoOwnerID =
 
 monzoClientSecret : String
 monzoClientSecret =
-    "Y/qw1c4pA8+3rHDch58n6Aw7CNj0W1oWS/n2Rkv+CLkCaRjBkeTia7yQ7JrNMeA2wQPcoJ8Y+lDpd5P5RXo6"
+    "xsm7i0fQ/cLMq1wIhwo9iE34m6USqFUuiI6g6qbVjo1ELdqgb1h/tEtHPoG1vvryv7XdjWaraIa3ju0lCSZB"
 
 
 monzoOAuthStateKey : String
