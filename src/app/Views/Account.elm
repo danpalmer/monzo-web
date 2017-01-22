@@ -19,6 +19,7 @@ import Utils.Auth as Auth
 import Api.Monzo as Monzo
 import Api.Monzo.Models exposing (Account, Balance, Transaction)
 import Components.Error as ErrorComponent
+import Components.Spinner as Spinner
 import Components.AccountSummary as AccountSummary
 import Components.TransactionsList as TransactionsList
 import Prelude exposing (join3, resultDetailToMsg)
@@ -211,6 +212,9 @@ viewTransactions model =
         case ( account, transactions ) of
             ( Just acc, Just txs ) ->
                 TransactionsList.view acc txs
+
+            ( Just acc, Nothing ) ->
+                Spinner.view
 
             otherwise ->
                 div [] [ text "No selected account" ]
