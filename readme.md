@@ -17,6 +17,6 @@ The application is written in Elm and Sass, and is an attempt for me to learn:
 This project requires that you have Elm 0.18 installed, and a recent Node
 environment set up (tested on v6.5.0).
 
- - To install dependencies, run `npm run install-all`
- - To run for development, `npm start`
- - To build for production, `npm run build`
+ - To install dependencies, run `yarn run install-all`
+ - To run for development, `yarn start`
+ - To build for production, `yarn run build`

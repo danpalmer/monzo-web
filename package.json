@@ -9,7 +9,7 @@
     "start": "webpack-dev-server --hot",
     "debug": "webpack-dev-server --hot --debug",
     "build": "TARGET_ENV=prod webpack --display-error-details",
-    "install-all": "npm install; elm package install --yes"
+    "install-all": "yarn install; elm package install --yes"
   },
   "devDependencies": {
     "autoprefixer": "6.4.0",
