@@ -9,7 +9,7 @@ import Erl
 
 monzoAuthBase : Erl.Url
 monzoAuthBase =
-    Erl.parse "https://auth.getmondo.co.uk/"
+    Erl.parse "https://auth.monzo.com/"
 
 
 monzoApiBase : Erl.Url
