@@ -20,7 +20,7 @@ var commonConfig = {
   },
 
   module: {
-    loaders: [
+    rules: [
       { test: /\.woff2?$/, use: "url-loader?limit=10000&mimetype=application/font-woff" },
       { test: /\.ttf$/,  use: "url-loader?limit=10000&mimetype=application/octet-stream" },
       { test: /\.eot$/,  use: "file-loader" },
@@ -60,7 +60,6 @@ var commonConfig = {
 };
 
 styleLoaders = [
-  'style-loader',
   'css-loader?sourceMap',
   {
     loader: 'postcss-loader',
@@ -77,6 +76,8 @@ styleLoaders = [
 elmDebugArg = DEBUG ? '&debug=true' : '';
 
 if (TARGET_ENV === 'dev') {
+  styleLoaders.unshift('style-loader');
+
   module.exports = merge(commonConfig, {
     output: {
       path: __dirname + '/build',
@@ -97,7 +98,7 @@ if (TARGET_ENV === 'dev') {
     },
 
     module: {
-      loaders: [
+      rules: [
         {
           test: /\.elm$/,
           exclude: [/elm-stuff/, /node_modules/],
@@ -163,7 +164,7 @@ if (TARGET_ENV === 'prod') {
           test: /\.(css|scss)$/,
           exclude: [/elm-stuff/, /node_modules/],
           use: ExtractTextPlugin.extract({
-            fallbackLoader: 'style-loader',
+            fallback: 'style-loader',
             use: styleLoaders
           })
         }
